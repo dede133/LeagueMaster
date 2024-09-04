@@ -15,9 +15,6 @@ export default function Home() {
           fútbol.
         </p>
 
-        {/* Mapa de Campos */}
-        <Map />
-
         <FeatureSection />
 
         <div className="text-center mt-8">
