@@ -2,6 +2,7 @@
 import React from 'react';
 import FeatureSection from '../components/FeatureSection';
 import Map from '../components/Map';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -18,12 +19,12 @@ export default function Home() {
         <FeatureSection />
 
         <div className="text-center mt-8">
-          <a
+          <Link
             href="/register"
             className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-700"
           >
-            Registrate aquí
-          </a>
+            Regístrate aquí
+          </Link>
         </div>
       </main>
     </div>

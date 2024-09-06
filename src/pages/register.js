@@ -1,5 +1,6 @@
 // src/pages/register.js
 import React, { useState } from 'react';
+import Link from 'next/link';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
@@ -10,12 +11,11 @@ const RegisterPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Validación de contraseñas
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden.');
       return;
     }
-    // Aquí iría la lógica de registro con el backend
+    // Lógica de registro con el backend
   };
 
   return (
@@ -64,9 +64,9 @@ const RegisterPage = () => {
       </form>
       <p className="mt-4">
         ¿Ya tienes una cuenta?{' '}
-        <a href="/login" className="text-blue-500">
-          Inicia sesión
-        </a>
+        <Link href="/login" passHref>
+          <a className="text-blue-500">Inicia sesión</a>
+        </Link>
       </p>
     </div>
   );
