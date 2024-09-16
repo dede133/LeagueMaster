@@ -1,6 +1,7 @@
 // src/components/Header.js
 import React from 'react';
 import Link from 'next/link';
+import { Button } from '@shadcn/ui';
 
 const Header = () => {
   return (
@@ -40,7 +41,7 @@ const Header = () => {
         </nav>
 
         {/* Botón de Llamada a la Acción: Iniciar Sesión */}
-        <Link
+        <Button
           href="/login"
           className="inline-flex items-center bg-blue-500 border-0 py-1 px-3 focus:outline-none hover:bg-blue-700 rounded text-white mt-4 md:mt-0"
         >
@@ -56,7 +57,7 @@ const Header = () => {
           >
             <path d="M5 12h14M12 5l7 7-7 7"></path>
           </svg>
-        </Link>
+        </Button>
       </div>
     </header>
   );

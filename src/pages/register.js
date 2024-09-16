@@ -1,6 +1,7 @@
 // src/pages/register.js
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/router';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
@@ -8,20 +9,55 @@ const RegisterPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState('');
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+    setSuccess('');
+
+    // Validar que las contraseñas coincidan
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden.');
       return;
     }
-    // Lógica de registro con el backend
+
+    try {
+      // Enviar datos al backend
+      const response = await fetch('http://localhost:5000/api/auth/register', {
+        // Cambia esto según sea necesario
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        setError(data.message || 'Ocurrió un error al registrar el usuario.');
+      } else {
+        setSuccess('Usuario registrado con éxito.');
+        // Limpiar el formulario después del registro exitoso
+        setName('');
+        setEmail('');
+        setPassword('');
+        setConfirmPassword('');
+        router.push('/login');
+      }
+    } catch (err) {
+      console.error('Error al registrar usuario:', err);
+      setError('Ocurrió un error al registrar el usuario.');
+    }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-4">Registro</h2>
       {error && <p className="text-red-500">{error}</p>}
+      {success && <p className="text-green-500">{success}</p>}
       <form onSubmit={handleSubmit}>
         <input
           type="text"
@@ -64,8 +100,8 @@ const RegisterPage = () => {
       </form>
       <p className="mt-4">
         ¿Ya tienes una cuenta?{' '}
-        <Link href="/login" passHref>
-          <a className="text-blue-500">Inicia sesión</a>
+        <Link href="/login" className="text-blue-500">
+          Inicia sesión
         </Link>
       </p>
     </div>
