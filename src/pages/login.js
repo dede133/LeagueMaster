@@ -1,22 +1,49 @@
 // src/pages/login.js
 import React, { useState } from 'react';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Aquí puedes añadir la lógica para enviar las credenciales al backend
-    // y manejar respuestas de éxito o error
+  const handleLogin = async (event) => {
+    event.preventDefault();
+
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password }),
+        credentials: 'include',
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        setError(errorData.message || 'Error al iniciar sesión');
+      } else {
+        const data = await response.json();
+        console.log('Inicio de sesión exitoso:', data);
+        setMessage('Inicio de sesión exitoso');
+        router.push('/profile');
+      }
+    } catch (error) {
+      console.error('Error de red o del servidor:', error);
+      setError('Error de red o del servidor');
+    }
   };
 
   return (
     <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded shadow">
       <h2 className="text-2xl font-bold mb-4">Iniciar Sesión</h2>
       {error && <p className="text-red-500">{error}</p>}
-      <form onSubmit={handleSubmit}>
+      {message && <p className="text-green-500">{message}</p>}
+      <form onSubmit={handleLogin}>
         <input
           type="email"
           placeholder="Correo electrónico"
@@ -42,15 +69,15 @@ const LoginPage = () => {
       </form>
       <p className="mt-4">
         ¿No tienes cuenta?{' '}
-        <a href="/register" className="text-blue-500">
-          Create una aquí
-        </a>
+        <Link href="/register" className="text-blue-500">
+          Crea una aquí
+        </Link>
       </p>
       <p className="mt-4">
         ¿Olvidaste tu contraseña?{' '}
-        <a href="/reset-password" className="text-blue-500">
+        <Link href="/reset-password" className="text-blue-500">
           Recupérala aquí
-        </a>
+        </Link>
       </p>
     </div>
   );

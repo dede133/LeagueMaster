@@ -1,5 +1,6 @@
 // src/components/Footer.js
 import React from 'react';
+import Link from 'next/link';
 
 const Footer = () => {
   return (
@@ -10,15 +11,15 @@ const Footer = () => {
           reservados.
         </p>
         <nav className="mt-4 space-x-4 text-sm md:text-base">
-          <a href="/privacy" className="text-gray-400 hover:text-white">
+          <Link href="/privacy" className="text-gray-400 hover:text-white">
             Política de Privacidad
-          </a>
-          <a href="/terms" className="text-gray-400 hover:text-white">
+          </Link>
+          <Link href="/terms" className="text-gray-400 hover:text-white">
             Términos de Servicio
-          </a>
-          <a href="/contact" className="text-gray-400 hover:text-white">
+          </Link>
+          <Link href="/contact" className="text-gray-400 hover:text-white">
             Contacto
-          </a>
+          </Link>
         </nav>
       </div>
     </footer>
