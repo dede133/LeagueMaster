@@ -1,7 +1,8 @@
 // src/components/Header.js
 import React from 'react';
 import Link from 'next/link';
-import { Button } from '@shadcn/ui';
+import { PersonIcon } from '@radix-ui/react-icons';
+import { Button } from '@/components/ui/button';
 
 const Header = () => {
   return (
@@ -40,24 +41,16 @@ const Header = () => {
           </Link>
         </nav>
 
+        <Link href="/add-field" className="mr-5 hover:text-gray-900">
+          ¿Tienes un campo?
+        </Link>
         {/* Botón de Llamada a la Acción: Iniciar Sesión */}
-        <Button
+        <Link
           href="/login"
           className="inline-flex items-center bg-blue-500 border-0 py-1 px-3 focus:outline-none hover:bg-blue-700 rounded text-white mt-4 md:mt-0"
         >
-          Iniciar Sesión
-          <svg
-            fill="none"
-            stroke="currentColor"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth="2"
-            className="w-4 h-4 ml-1"
-            viewBox="0 0 24 24"
-          >
-            <path d="M5 12h14M12 5l7 7-7 7"></path>
-          </svg>
-        </Button>
+          <PersonIcon />
+        </Link>
       </div>
     </header>
   );
