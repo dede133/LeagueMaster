@@ -1,10 +1,35 @@
 // src/pages/index.js
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import FeatureSection from '../components/FeatureSection';
-import Map from '../components/Map';
 import Link from 'next/link';
+import CustomCarousel from '../components/CustomCarousel'; // Importamos tu carrusel personalizado
 
 export default function Home() {
+  const [fields, setFields] = useState([]);
+  const [loading, setLoading] = useState(true); // Estado para manejar la carga
+  const [error, setError] = useState(null); // Estado para manejar errores
+
+  useEffect(() => {
+    const fetchFields = async () => {
+      try {
+        const response = await fetch('http://localhost:5000/api/field');
+        if (!response.ok) {
+          throw new Error('Error al cargar los campos');
+        }
+        const data = await response.json();
+        console.log('Datos recibidos del fetch:', data);
+
+        setFields(data.fields);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFields();
+  }, []);
+
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow p-4 md:p-6">
@@ -16,8 +41,49 @@ export default function Home() {
           fútbol.
         </p>
 
+        {/* Sección de características */}
         <FeatureSection />
 
+        {/* Carrusel de campos */}
+        <div className="mt-8">
+          <h2 className="text-xl font-bold text-center mb-4">
+            Campos Disponibles
+          </h2>
+
+          {/* Manejamos el estado de carga, error o el contenido */}
+          {loading ? (
+            <p className="text-center">Cargando campos...</p>
+          ) : error ? (
+            <p className="text-center text-red-500">{error}</p>
+          ) : fields.length === 0 ? (
+            <p className="text-center text-gray-700">
+              No hay campos disponibles
+            </p>
+          ) : (
+            <CustomCarousel
+              items={fields}
+              renderItem={(field) => (
+                <div className="mb-4">
+                  <img
+                    src={`http://localhost:5000/${field.photo_url[0]}`}
+                    alt={field.name}
+                    className="w-full h-64 object-cover"
+                  />
+                  <h3 className="text-lg font-bold mt-2">{field.name}</h3>
+                  <p className="text-sm text-gray-600">{field.address}</p>
+                  <Link
+                    href={`/fields/${field.field_id}`}
+                    className="text-blue-500"
+                  >
+                    Ver detalles
+                  </Link>
+                </div>
+              )}
+            />
+          )}
+        </div>
+
+        {/* Botón de registro */}
         <div className="text-center mt-8">
           <Link
             href="/register"
