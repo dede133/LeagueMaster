@@ -49,6 +49,7 @@ const AddField = () => {
         'http://localhost:5000/api/field/add-field',
         {
           method: 'POST',
+          credentials: 'include',
           body: formData, // Envía el FormData directamente, sin especificar el Content-Type
         }
       );
