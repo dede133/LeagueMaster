@@ -3,8 +3,71 @@ import React from 'react';
 import Link from 'next/link';
 import { PersonIcon } from '@radix-ui/react-icons';
 import { Button } from '@/components/ui/button';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 
 const Header = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true); // Estado de carga
+  const router = useRouter();
+
+  useEffect(() => {
+    console.log('useEffect ejecutándose');
+    const checkAuth = async () => {
+      try {
+        console.log('Iniciando petición para verificar autenticación...');
+
+        const response = await fetch('http://localhost:5000/api/check-auth', {
+          method: 'GET',
+          credentials: 'include', // Esto asegura que las cookies se envíen
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!response.ok) {
+          console.error(
+            'Error en la respuesta del servidor:',
+            response.statusText
+          );
+          setIsAuthenticated(false);
+          setLoading(false);
+          return;
+        }
+
+        const data = await response.json();
+        console.log('Respuesta del servidor:', data);
+
+        if (data.isAuthenticated) {
+          console.log('Usuario autenticado');
+          setIsAuthenticated(true);
+        } else {
+          console.log('Usuario no autenticado');
+          setIsAuthenticated(false);
+        }
+      } catch (error) {
+        console.error('Error al hacer el fetch:', error);
+        setIsAuthenticated(false);
+      } finally {
+        setLoading(false); // Detener la carga después de verificar la autenticación
+      }
+    };
+
+    checkAuth(); // Llamada al cargar la página
+  }, []);
+
+  const handleProfileClick = () => {
+    if (!loading) {
+      if (isAuthenticated) {
+        console.log('Redirigiendo al perfil');
+        router.push('/profile'); // Si está autenticado, redirigir al perfil
+      } else {
+        console.log('Redirigiendo al login');
+        router.push('/login'); // Si no está autenticado, redirigir al login
+      }
+    }
+  };
+
   return (
     <header className="text-gray-600 body-font">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
@@ -45,12 +108,14 @@ const Header = () => {
           ¿Tienes un campo?
         </Link>
         {/* Botón de Llamada a la Acción: Iniciar Sesión */}
-        <Link
-          href="/login"
+        <button
+          onClick={handleProfileClick}
+          disabled={loading} // Deshabilitar el botón mientras está cargando
           className="inline-flex items-center bg-blue-500 border-0 py-1 px-3 focus:outline-none hover:bg-blue-700 rounded text-white mt-4 md:mt-0"
         >
           <PersonIcon />
-        </Link>
+          {loading ? 'Cargando...' : 'Perfil'}
+        </button>
       </div>
     </header>
   );
