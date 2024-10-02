@@ -1,20 +1,25 @@
 // src/pages/_app.js
 import '../styles/globals.css';
+import { Theme } from '@radix-ui/themes';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 function MyApp({ Component, pageProps }) {
   return (
-    <>
-      {/* Header estará presente en todas las páginas */}
-      <Header />
+    <Theme>
+      <div className="flex flex-col min-h-screen">
+        {/* Header estará presente en todas las páginas */}
+        <Header />
 
-      {/* Renderiza el componente de la página actual */}
-      <Component {...pageProps} />
+        {/* El contenido de la página debe crecer para llenar el espacio disponible */}
+        <main className="flex-1">
+          <Component {...pageProps} />
+        </main>
 
-      {/* Renderiza el componente de la página actual */}
-      <Footer />
-    </>
+        {/* El footer siempre se mantiene en la parte inferior */}
+        <Footer />
+      </div>
+    </Theme>
   );
 }
 

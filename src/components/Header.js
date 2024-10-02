@@ -2,12 +2,12 @@
 import React from 'react';
 import Link from 'next/link';
 import { PersonIcon } from '@radix-ui/react-icons';
-import { Button } from '@/components/ui/button';
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 
 const Header = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true); // Estado de carga
   const router = useRouter();
 
@@ -17,13 +17,16 @@ const Header = () => {
       try {
         console.log('Iniciando petición para verificar autenticación...');
 
-        const response = await fetch('http://localhost:5000/api/check-auth', {
-          method: 'GET',
-          credentials: 'include', // Esto asegura que las cookies se envíen
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await fetch(
+          'http://localhost:5000/api/auth/check-auth',
+          {
+            method: 'GET',
+            credentials: 'include', // Esto asegura que las cookies se envíen
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
         if (!response.ok) {
           console.error(
@@ -37,10 +40,12 @@ const Header = () => {
 
         const data = await response.json();
         console.log('Respuesta del servidor:', data);
+        console.log('User role:', data.user.user_role);
 
         if (data.isAuthenticated) {
-          console.log('Usuario autenticado');
+          +console.log('Usuario autenticado');
           setIsAuthenticated(true);
+          setUserRole(data.user.user_role);
         } else {
           console.log('Usuario no autenticado');
           setIsAuthenticated(false);
@@ -53,8 +58,15 @@ const Header = () => {
       }
     };
 
-    checkAuth(); // Llamada al cargar la página
-  }, []);
+    // Ejecuta checkAuth cada vez que cambie la ruta
+    checkAuth();
+
+    router.events.on('routeChangeComplete', checkAuth); // Escuchar cambios de ruta
+
+    return () => {
+      router.events.off('routeChangeComplete', checkAuth); // Limpiar la suscripción
+    };
+  }, [router.events]);
 
   const handleProfileClick = () => {
     if (!loading) {
@@ -107,6 +119,11 @@ const Header = () => {
         <Link href="/add-field" className="mr-5 hover:text-gray-900">
           ¿Tienes un campo?
         </Link>
+        {userRole === 'admin' && (
+          <Link href="/admin-fields" className="mr-5 hover:text-gray-900">
+            Tus campos
+          </Link>
+        )}
         {/* Botón de Llamada a la Acción: Iniciar Sesión */}
         <button
           onClick={handleProfileClick}

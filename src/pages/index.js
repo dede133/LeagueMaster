@@ -67,7 +67,7 @@ export default function Home() {
                   <img
                     src={`http://localhost:5000/${field.photo_url[0]}`}
                     alt={field.name}
-                    className="w-full h-64 object-cover"
+                    className="w-full h-64 object-cover rounded-lg"
                   />
                   <h3 className="text-lg font-bold mt-2">{field.name}</h3>
                   <p className="text-sm text-gray-600">{field.address}</p>
