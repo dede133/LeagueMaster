@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { login } from '@/lib/services/auth';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -15,27 +16,13 @@ const LoginPage = () => {
     event.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ email, password }),
-        credentials: 'include',
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        setError(errorData.message || 'Error al iniciar sesión');
-      } else {
-        const data = await response.json();
-        console.log('Inicio de sesión exitoso:', data);
-        setMessage('Inicio de sesión exitoso');
-        router.push('/profile');
-      }
+      const data = await login(email, password);
+      console.log('Inicio de sesión exitoso:', data);
+      setMessage('Inicio de sesión exitoso');
+      router.push('/profile');
     } catch (error) {
       console.error('Error de red o del servidor:', error);
-      setError('Error de red o del servidor');
+      setError(error.message);
     }
   };
 

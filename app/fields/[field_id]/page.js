@@ -1,6 +1,6 @@
 'use client';
-import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
+import { getFieldDetails } from '@/lib/services/field';
 import CustomCarousel from '../../../components/CustomCarousel';
 import {
   Card,
@@ -18,26 +18,20 @@ const FieldDetails = ({ params }) => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (field_id) {
-      const fetchFieldDetails = async () => {
-        try {
-          const response = await fetch(
-            `http://localhost:5000/api/field/${field_id}`
-          );
-          if (!response.ok) {
-            throw new Error('Error al cargar los detalles del campo');
-          }
-          const data = await response.json();
-          setField(data.field);
-        } catch (error) {
-          setError(error.message);
-        } finally {
-          setLoading(false);
-        }
-      };
+    const fetchFieldDetails = async () => {
+      if (!field_id) return;
 
-      fetchFieldDetails();
-    }
+      try {
+        const fieldData = await getFieldDetails(field_id);
+        setField(fieldData);
+      } catch (error) {
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchFieldDetails();
   }, [field_id]);
 
   if (loading) return <p>Cargando detalles del campo...</p>;

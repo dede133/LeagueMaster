@@ -1,5 +1,5 @@
 'use client'; // Indica que esta página es un componente cliente
-
+import { fetchFields } from '@/lib/services/field';
 import React, { useState, useEffect } from 'react';
 import FeatureSection from '../components/FeatureSection';
 import Link from 'next/link';
@@ -11,14 +11,10 @@ export default function Home() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const fetchFields = async () => {
+    const loadFields = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/field');
-        if (!response.ok) {
-          throw new Error('Error al cargar los campos');
-        }
-        const data = await response.json();
-        setFields(data.fields);
+        const fieldsData = await fetchFields();
+        setFields(fieldsData);
       } catch (error) {
         setError(error.message);
       } finally {
@@ -26,9 +22,8 @@ export default function Home() {
       }
     };
 
-    fetchFields();
+    loadFields();
   }, []);
-
   return (
     <div className="flex flex-col min-h-screen">
       <main className="flex-grow p-4 md:p-6">

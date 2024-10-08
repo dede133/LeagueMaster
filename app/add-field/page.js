@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
+import { addField } from '@/lib/services/field';
 
 const AddField = () => {
   const [name, setName] = useState('');
@@ -45,26 +46,12 @@ const AddField = () => {
     }
 
     try {
-      const response = await fetch(
-        'http://localhost:5000/api/field/add-field',
-        {
-          method: 'POST',
-          credentials: 'include',
-          body: formData, // Envía el FormData directamente, sin especificar el Content-Type
-        }
-      );
-
-      if (response.ok) {
-        alert('Campo añadido con éxito');
-        // Redirigir a la página de lista de campos
-        //window.location.href = '/fields'; // Usa window.location.href para redirigir
-      } else {
-        const errorData = await response.json(); // Lee la respuesta del servidor
-        alert('Error al añadir el campo: ' + errorData.message);
-      }
+      await addField(formData);
+      alert('Campo añadido con éxito');
+      // Redirigir a la página de lista de campos si es necesario
+      // window.location.href = '/fields';
     } catch (error) {
-      console.error('Error en el servidor:', error);
-      alert('Hubo un error al intentar añadir el campo.');
+      alert(error.message);
     }
   };
 
