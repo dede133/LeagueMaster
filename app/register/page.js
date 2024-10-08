@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { registerUser } from '@/lib/services/auth';
 
 const RegisterPage = () => {
   const [name, setName] = useState('');
@@ -18,39 +19,24 @@ const RegisterPage = () => {
     setError('');
     setSuccess('');
 
-    // Validar que las contraseñas coincidan
     if (password !== confirmPassword) {
       setError('Las contraseñas no coinciden.');
       return;
     }
 
     try {
-      // Enviar datos al backend
-      const response = await fetch('http://localhost:5000/api/auth/register', {
-        // Cambia esto según sea necesario
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ name, email, password }),
-      });
+      await registerUser(name, email, password);
+      setSuccess('Usuario registrado con éxito.');
 
-      const data = await response.json();
+      setName('');
+      setEmail('');
+      setPassword('');
+      setConfirmPassword('');
 
-      if (!response.ok) {
-        setError(data.message || 'Ocurrió un error al registrar el usuario.');
-      } else {
-        setSuccess('Usuario registrado con éxito.');
-        // Limpiar el formulario después del registro exitoso
-        setName('');
-        setEmail('');
-        setPassword('');
-        setConfirmPassword('');
-        router.push('/login');
-      }
+      router.push('/login');
     } catch (err) {
       console.error('Error al registrar usuario:', err);
-      setError('Ocurrió un error al registrar el usuario.');
+      setError(err.message || 'Ocurrió un error al registrar el usuario.');
     }
   };
 

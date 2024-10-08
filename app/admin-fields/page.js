@@ -1,6 +1,8 @@
 'use client';
 import { useState, useEffect } from 'react';
-import { X } from 'lucide-react'; // Importar el ícono de Lucide
+import { X } from 'lucide-react';
+import { getUserFields } from '@/lib/services/field';
+import { getFieldAvailability } from '@/lib/services/availability';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -43,25 +45,13 @@ const AdminFieldManagement = () => {
   const [showModal, setShowModal] = useState(false);
 
   useEffect(() => {
-    // Obtener los campos del usuario al cargar la página
     const fetchFields = async () => {
       try {
-        const response = await fetch(
-          'http://localhost:5000/api/field/user-fields',
-          {
-            method: 'GET',
-            credentials: 'include',
-          }
-        );
-        const data = await response.json();
-        if (response.ok) {
-          setFields(data.fields);
-          setSelectedField(data.fields[0]);
-        } else {
-          alert('Error al cargar los campos.');
-        }
+        const fieldsData = await getUserFields();
+        setFields(fieldsData);
+        setSelectedField(fieldsData[0]); // Selecciona el primer campo
       } catch (error) {
-        console.error('Error al cargar los campos:', error);
+        alert(error.message);
       }
     };
 
@@ -69,47 +59,17 @@ const AdminFieldManagement = () => {
   }, []);
 
   useEffect(() => {
-    // Obtener disponibilidad semanal y fechas bloqueadas del campo seleccionado
     const fetchFieldData = async () => {
       if (!selectedField) return;
 
       try {
-        const response = await fetch(
-          `http://localhost:5000/api/availability/${selectedField.field_id}`,
-          {
-            method: 'GET',
-            credentials: 'include',
-          }
+        const { weeklyAvailability, blockedDates } = await getFieldAvailability(
+          selectedField.field_id
         );
-        const data = await response.json();
-
-        if (response.ok) {
-          console.log(data);
-          // Cargar disponibilidad semanal en el estado
-          const weeklyAvailability = data.weeklyAvailability.reduce(
-            (acc, item) => {
-              const day = daysOfWeek[item.day_of_week - 1];
-              acc[day] = {
-                startTime: item.start_time,
-                endTime: item.end_time,
-              };
-              return acc;
-            },
-            {}
-          );
-          setAvailability(weeklyAvailability);
-
-          // Cargar fechas bloqueadas en el calendario
-          const blocked = data.blockedDates.map((date) => ({
-            from: new Date(date.start_time),
-            to: new Date(date.end_time),
-          }));
-          setBlockedDates(blocked);
-        } else {
-          console.error('Error al cargar disponibilidad y fechas bloqueadas');
-        }
+        setAvailability(weeklyAvailability);
+        setBlockedDates(blockedDates);
       } catch (error) {
-        console.error('Error al cargar los datos del campo:', error);
+        console.error(error.message);
       }
     };
 

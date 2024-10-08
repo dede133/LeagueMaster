@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useRequireAuth from '../../hooks/useRequireAuth';
+import { logout, deleteAccount } from '@/lib/services/auth';
 
 const ProfilePage = () => {
   const { user, loading, error, setUser } = useRequireAuth();
@@ -27,19 +28,11 @@ const ProfilePage = () => {
 
   const handleLogout = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/logout', {
-        method: 'POST',
-        credentials: 'include',
-      });
-
-      if (response.ok) {
-        console.log('Sesión cerrada con éxito');
-        router.push('/login');
-      } else {
-        console.error('Error al cerrar sesión');
-      }
+      await logout();
+      console.log('Sesión cerrada con éxito');
+      router.push('/login');
     } catch (error) {
-      console.error('Error de red o del servidor:', error);
+      console.error('Error al cerrar sesión:', error);
     }
   };
 
@@ -58,30 +51,13 @@ const ProfilePage = () => {
     }
 
     try {
-      const response = await fetch(
-        `http://localhost:5000/api/auth/user/${user.id}`,
-        {
-          method: 'DELETE',
-          credentials: 'include',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        console.log('Cuenta eliminada con éxito');
-        alert('Cuenta eliminada con éxito.');
-        router.push('/');
-      } else {
-        console.error(data.message || 'Error al eliminar la cuenta.');
-        alert(data.message || 'Error al eliminar la cuenta.');
-      }
+      await deleteAccount(user.id);
+      console.log('Cuenta eliminada con éxito');
+      alert('Cuenta eliminada con éxito.');
+      router.push('/');
     } catch (error) {
       console.error('Error al eliminar la cuenta:', error);
-      alert('Error al eliminar la cuenta.');
+      alert(error.message);
     }
   };
 
