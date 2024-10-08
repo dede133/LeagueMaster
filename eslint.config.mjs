@@ -1,36 +1,31 @@
-import globals from "globals";
-import pluginJs from "@eslint/js";
-import tseslint from "@typescript-eslint/eslint-plugin";
-import pluginReact from "eslint-plugin-react";
-import prettier from "eslint-config-prettier";
-import prettierPlugin from "eslint-plugin-prettier";
-
 export default [
-  // Aplica configuraciones a todos los archivos JavaScript y TypeScript
   {
-    files: ["**/*.{js,mjs,cjs,ts,jsx,tsx}"],
+    files: ['**/*.{js,mjs,cjs,ts,jsx,tsx}'],
     languageOptions: {
       globals: globals.browser,
     },
     plugins: {
       react: pluginReact,
-      "@typescript-eslint": tseslint,
+      '@typescript-eslint': tseslint,
       prettier: prettierPlugin,
     },
     rules: {
-      ...pluginJs.configs.recommended.rules,        // Reglas recomendadas de ESLint
-      ...tseslint.configs.recommended.rules,        // Reglas recomendadas de TypeScript
-      ...pluginReact.configs.flat.recommended.rules, // Reglas recomendadas de React
-      "prettier/prettier": "error",                 // Ejecuta Prettier como una regla de ESLint
+      ...pluginJs.configs.recommended.rules,
+      ...tseslint.configs.recommended.rules,
+      ...pluginReact.configs.flat.recommended.rules,
+      'prettier/prettier': [
+        'error',
+        {
+          endOfLine: 'lf', // Añadir esta opción para forzar LF como salto de línea
+        },
+      ],
     },
   },
-  // Configuración específica para archivos JavaScript
   {
-    files: ["**/*.js"],
+    files: ['**/*.js'],
     languageOptions: {
-      sourceType: "commonjs",
+      sourceType: 'commonjs',
     },
   },
-  // Desactiva reglas que pueden entrar en conflicto con Prettier
   prettier,
 ];
