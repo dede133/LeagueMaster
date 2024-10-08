@@ -1,7 +1,8 @@
 // src/pages/profile.js
+'use client';
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
-import useRequireAuth from '../hooks/useRequireAuth';
+import { useRouter } from 'next/navigation';
+import useRequireAuth from '../../hooks/useRequireAuth';
 
 const ProfilePage = () => {
   const { user, loading, error, setUser } = useRequireAuth();

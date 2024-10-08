@@ -1,4 +1,5 @@
 // src/components/FeatureSection.js
+'use client';
 import React from 'react';
 
 const FeatureSection = () => {

@@ -1,4 +1,5 @@
 // src/components/Map.js
+'use client';
 import React, { useState, useEffect } from 'react';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 

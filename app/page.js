@@ -1,13 +1,14 @@
-// src/pages/index.js
+'use client'; // Indica que esta página es un componente cliente
+
 import React, { useState, useEffect } from 'react';
 import FeatureSection from '../components/FeatureSection';
 import Link from 'next/link';
-import CustomCarousel from '../components/CustomCarousel'; // Importamos tu carrusel personalizado
+import CustomCarousel from '../components/CustomCarousel';
 
 export default function Home() {
   const [fields, setFields] = useState([]);
-  const [loading, setLoading] = useState(true); // Estado para manejar la carga
-  const [error, setError] = useState(null); // Estado para manejar errores
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchFields = async () => {
@@ -17,8 +18,6 @@ export default function Home() {
           throw new Error('Error al cargar los campos');
         }
         const data = await response.json();
-        console.log('Datos recibidos del fetch:', data);
-
         setFields(data.fields);
       } catch (error) {
         setError(error.message);
@@ -49,8 +48,6 @@ export default function Home() {
           <h2 className="text-xl font-bold text-center mb-4">
             Campos Disponibles
           </h2>
-
-          {/* Manejamos el estado de carga, error o el contenido */}
           {loading ? (
             <p className="text-center">Cargando campos...</p>
           ) : error ? (

@@ -1,9 +1,10 @@
-// src/components/Header.js
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 import { PersonIcon } from '@radix-ui/react-icons';
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 
 const Header = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -43,7 +44,7 @@ const Header = () => {
         console.log('User role:', data.user.user_role);
 
         if (data.isAuthenticated) {
-          +console.log('Usuario autenticado');
+          console.log('Usuario autenticado');
           setIsAuthenticated(true);
           setUserRole(data.user.user_role);
         } else {
@@ -58,15 +59,9 @@ const Header = () => {
       }
     };
 
-    // Ejecuta checkAuth cada vez que cambie la ruta
+    // Llamada inicial para verificar autenticación
     checkAuth();
-
-    router.events.on('routeChangeComplete', checkAuth); // Escuchar cambios de ruta
-
-    return () => {
-      router.events.off('routeChangeComplete', checkAuth); // Limpiar la suscripción
-    };
-  }, [router.events]);
+  }, [router]);
 
   const handleProfileClick = () => {
     if (!loading) {

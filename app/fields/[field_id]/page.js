@@ -1,6 +1,7 @@
-import { useRouter } from 'next/router';
+'use client';
+import { useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
-import CustomCarousel from '../../components/CustomCarousel';
+import CustomCarousel from '../../../components/CustomCarousel';
 import {
   Card,
   CardContent,
@@ -10,9 +11,8 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
-const FieldDetails = () => {
-  const router = useRouter();
-  const { field_id } = router.query; // Obtenemos el field_id de la URL
+const FieldDetails = ({ params }) => {
+  const { field_id } = params; // Aquí obtienes el field_id directamente de params
   const [field, setField] = useState(null); // Estado para almacenar los datos del campo
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

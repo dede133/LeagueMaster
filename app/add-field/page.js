@@ -1,5 +1,5 @@
 // src/pages/add-field.js
-
+'use client';
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -74,7 +74,7 @@ const AddField = () => {
       <form onSubmit={handleAddField}>
         <Input
           placeholder="Nombre del Campo"
-          className="mb-4"
+          className="mb-4 mt-2"
           value={name}
           onChange={(e) => setName(e.target.value)}
           required
