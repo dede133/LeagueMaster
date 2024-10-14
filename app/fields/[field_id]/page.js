@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react';
 import { getFieldDetails } from '@/lib/services/field';
 import CustomCarousel from '../../../components/CustomCarousel';
+import ScheduleTable from '@/components/ScheduleTable';
 import {
   Card,
   CardContent,
@@ -11,9 +12,19 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 
+const mockAvailability = [
+  { day_of_week: 1, start_time: '03:00:00', end_time: '09:00:00', price: 60 },
+  { day_of_week: 2, start_time: '09:00:00', end_time: '14:00:00', price: 60 },
+];
+
+const mockBlockedDates = [
+  { start_time: '2024-10-18', end_time: null, reason: '' },
+  { start_time: '2024-10-26', end_time: '2024-10-29', reason: '' },
+];
+
 const FieldDetails = ({ params }) => {
-  const { field_id } = params; // Aquí obtienes el field_id directamente de params
-  const [field, setField] = useState(null); // Estado para almacenar los datos del campo
+  const { field_id } = params;
+  const [field, setField] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -55,28 +66,22 @@ const FieldDetails = ({ params }) => {
       </div>
 
       <div className="container mx-auto p-8">
-        <div className="max-w-5xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-2 p-8">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-2">
           {/* Columna Principal (2 tarjetas principales en el centro) */}
           <div className="lg:col-span-3 space-y-4">
-            {/* Card 1: Horario de Pistas */}
-            <Card className="w-full h-auto shadow-md">
+            <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
               <CardHeader>
-                <CardTitle>Mapa de reservas</CardTitle>
+                <CardTitle>Horario de Pistas</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="flex flex-col space-y-2">
-                  <div className="bg-gray-100 p-2 rounded">Lunes</div>
-                  <div className="bg-gray-100 p-2 rounded">Martes</div>
-                  <div className="bg-gray-100 p-2 rounded">Miercoles</div>
-                  <div className="bg-gray-100 p-2 rounded">Jueves</div>
-                  <div className="bg-gray-100 p-2 rounded">Viernes</div>
-                  <div className="bg-gray-100 p-2 rounded">Sabado</div>
-                </div>
+              <CardContent className=" flex justify-center">
+                <ScheduleTable
+                  availability={mockAvailability}
+                  blockedDates={mockBlockedDates}
+                />
               </CardContent>
             </Card>
 
-            {/* Card 2: Información del Club */}
-            <Card className="w-full h-auto lg:max-w-4xl shadow-md">
+            <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
               <CardHeader>
                 <CardTitle>El club</CardTitle>
               </CardHeader>
@@ -91,7 +96,7 @@ const FieldDetails = ({ params }) => {
               </CardContent>
             </Card>
 
-            <Card className="w-full h-auto lg:max-w-4xl shadow-md">
+            <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
               <CardContent>
                 <CustomCarousel
                   items={field.photo_url} // Pasamos el array de fotos
@@ -168,7 +173,6 @@ const FieldDetails = ({ params }) => {
 
         <p className="mt-4">Tipo: {field.field_type}</p>
         <p className="mt-4">{field.field_info}</p>
-        {/* Aquí puedes añadir más detalles sobre el campo */}
       </div>
     </>
   );

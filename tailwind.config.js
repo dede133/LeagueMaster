@@ -16,6 +16,12 @@ module.exports = {
       },
     },
     extend: {
+      maxWidth: {
+        '4.5xl': '950px',
+      },
+      width: {
+        tableDays: '90px',
+      },
       colors: {
         border: 'hsl(var(--border))',
         input: 'hsl(var(--input))',
