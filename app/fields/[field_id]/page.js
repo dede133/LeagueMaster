@@ -1,6 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { getFieldDetails } from '@/lib/services/field';
+import { getFieldAvailability } from '@/lib/services/availability';
 import CustomCarousel from '../../../components/CustomCarousel';
 import ScheduleTable from '@/components/ScheduleTable';
 import {
@@ -27,6 +28,8 @@ const FieldDetails = ({ params }) => {
   const [field, setField] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [availability, setAvailability] = useState(null);
+  const [blockedDates, setBlockedDates] = useState([]);
 
   useEffect(() => {
     const fetchFieldDetails = async () => {
@@ -34,6 +37,11 @@ const FieldDetails = ({ params }) => {
 
       try {
         const fieldData = await getFieldDetails(field_id);
+        const { weeklyAvailability, blockedDates } =
+          await getFieldAvailability(field_id);
+
+        setAvailability(weeklyAvailability);
+        setBlockedDates(blockedDates);
         setField(fieldData);
       } catch (error) {
         setError(error.message);
@@ -75,8 +83,8 @@ const FieldDetails = ({ params }) => {
               </CardHeader>
               <CardContent className=" flex justify-center">
                 <ScheduleTable
-                  availability={mockAvailability}
-                  blockedDates={mockBlockedDates}
+                  availability={availability}
+                  blockedDates={blockedDates}
                 />
               </CardContent>
             </Card>
@@ -135,12 +143,6 @@ const FieldDetails = ({ params }) => {
                 <CardTitle>Ubicación</CardTitle>
               </CardHeader>
               <CardContent>
-                <iframe
-                  className="w-full h-48 rounded"
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3105!2d-3.703!3d40.4167!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xd422!2sForus Caja Mágica"
-                  allowFullScreen=""
-                  loading="lazy"
-                ></iframe>
                 <p className="mt-4">Camino de Perales, s/n, 28041</p>
               </CardContent>
             </Card>
