@@ -91,6 +91,7 @@ const ScheduleTable = ({ availability, blockedDates }) => {
   const isDayBlocked = (day) => {
     return blockedDates.some(({ from, to }) => {
       if (!from) return false; // Si no hay fecha de inicio, no bloqueamos
+
       return isWithinInterval(day, { start: from, end: to || from }); // Si no hay 'to', usa 'from' como el único día bloqueado
     });
   };
@@ -139,95 +140,105 @@ const ScheduleTable = ({ availability, blockedDates }) => {
           </PopoverContent>
         </Popover>
       </div>
-      <table className="min-w-max table-fixed border-collapse border-spacing-0">
-        <thead className="sticky top-0 bg-white z-10 ">
-          <tr>
-            <th className="sticky top-0 left-0 z-20 bg-white px-3 py-2 text-center text-sm">
-              Horas / Días
-            </th>
-            {daysOfWeek.map((day, index) => (
-              <th
-                key={index}
-                className="sticky top-0 bg-white px-3 py-2 text-center text-sm w-tableDays"
-              >
-                {day}
+      {/* Verificar si hay horas disponibles */}
+      {hours.length === 0 ? (
+        <p className="text-center text-gray-500 py-4">
+          No hay reservas disponibles
+        </p>
+      ) : (
+        <table className="min-w-max table-fixed border-collapse border-spacing-0">
+          <thead className="sticky top-0 bg-white z-10 ">
+            <tr>
+              <th className="sticky top-0 left-0 z-20 bg-white px-3 py-2 text-center text-sm">
+                Horas / Días
               </th>
-            ))}
-          </tr>
-        </thead>
-        <TableBody>
-          {hours.map((hour, hourIndex) => (
-            <TableRow key={hourIndex} className="hover:bg-gray-50 border-none">
-              <TableCell className="bg-gray-100 text-center text-sm border-b border-r border-t">
-                {hour}
-              </TableCell>
-              {daysOfWeek.map((day, dayIndex) => {
-                const key = `${dayIndex}-${hourIndex}`;
-                const currentDate = new Date(firstDayOfWeek);
-                currentDate.setDate(firstDayOfWeek.getDate() + dayIndex);
-                const availableDay = availability.find(
-                  (avail) => avail.day_of_week === dayIndex + 1
-                );
+              {daysOfWeek.map((day, index) => (
+                <th
+                  key={index}
+                  className="sticky top-0 bg-white px-3 py-2 text-center text-sm w-tableDays"
+                >
+                  {day}
+                </th>
+              ))}
+            </tr>
+          </thead>
+          <TableBody>
+            {hours.map((hour, hourIndex) => (
+              <TableRow
+                key={hourIndex}
+                className="hover:bg-gray-50 border-none"
+              >
+                <TableCell className="bg-gray-100 text-center text-sm border-b border-r border-t">
+                  {hour}
+                </TableCell>
+                {daysOfWeek.map((day, dayIndex) => {
+                  const key = `${dayIndex}-${hourIndex}`;
+                  const currentDate = new Date(firstDayOfWeek);
+                  currentDate.setDate(firstDayOfWeek.getDate() + dayIndex);
+                  const availableDay = availability.find(
+                    (avail) => avail.day_of_week === dayIndex + 1
+                  );
 
-                // Bloquear la hora si no está disponible en este día o está bloqueada
-                const isHourBlocked =
-                  !isAvailable(
-                    dayIndex + 1,
-                    parseInt(hour.split(':')[0], 10)
-                  ) || isDayBlocked(currentDate);
+                  // Bloquear la hora si no está disponible en este día o está bloqueada
+                  const isHourBlocked =
+                    !isAvailable(
+                      dayIndex + 1,
+                      parseInt(hour.split(':')[0], 10)
+                    ) || isDayBlocked(currentDate);
 
-                return (
-                  <TableCell key={dayIndex} className="border-r p-0 h-12">
-                    {availableDay ? (
-                      <DropdownMenu
-                        open={openDropdown === key}
-                        onOpenChange={(open) =>
-                          setOpenDropdown(open ? key : null)
-                        }
-                      >
-                        <DropdownMenuTrigger asChild>
-                          <button
-                            onClick={() => setOpenDropdown(key)}
-                            className={`inline-block align-top h-full w-full ${
-                              isHourBlocked
-                                ? 'bg-gray-300 cursor-not-allowed'
-                                : selectedButtons[key]
-                                  ? 'bg-blue-500 text-white'
-                                  : 'bg-white hover:bg-blue-500 text-gray-700'
-                            } data-[state=open]:bg-blue-500`}
-                            disabled={isHourBlocked} // Bloquear el botón si la hora está fuera del rango o bloqueada
-                          ></button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent>
-                          <DropdownMenuLabel>
-                            {`Reservando: ${daysOfWeek[dayIndex]} - ${hour}`}
-                          </DropdownMenuLabel>
-                          <DropdownMenuSeparator />
-                          <div className="px-4 py-2">
-                            <p className="text-sm text-gray-700">
-                              Precio: ${availableDay.price}
-                            </p>
+                  return (
+                    <TableCell key={dayIndex} className="border-r p-0 h-12">
+                      {availableDay ? (
+                        <DropdownMenu
+                          open={openDropdown === key}
+                          onOpenChange={(open) =>
+                            setOpenDropdown(open ? key : null)
+                          }
+                        >
+                          <DropdownMenuTrigger asChild>
                             <button
-                              onClick={() =>
-                                handleContinue(dayIndex, hourIndex)
-                              }
-                              className="mt-2 w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
-                            >
-                              Continuar
-                            </button>
-                          </div>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    ) : (
-                      <div className="bg-gray-300 w-full h-full"></div> // No disponible
-                    )}
-                  </TableCell>
-                );
-              })}
-            </TableRow>
-          ))}
-        </TableBody>
-      </table>
+                              onClick={() => setOpenDropdown(key)}
+                              className={`inline-block align-top h-full w-full ${
+                                isHourBlocked
+                                  ? 'bg-gray-300 cursor-not-allowed'
+                                  : selectedButtons[key]
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-white hover:bg-blue-500 text-gray-700'
+                              } data-[state=open]:bg-blue-500`}
+                              disabled={isHourBlocked} // Bloquear el botón si la hora está fuera del rango o bloqueada
+                            ></button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent>
+                            <DropdownMenuLabel>
+                              {`Reservando: ${daysOfWeek[dayIndex]} - ${hour}`}
+                            </DropdownMenuLabel>
+                            <DropdownMenuSeparator />
+                            <div className="px-4 py-2">
+                              <p className="text-sm text-gray-700">
+                                Precio: ${availableDay.price}
+                              </p>
+                              <button
+                                onClick={() =>
+                                  handleContinue(dayIndex, hourIndex)
+                                }
+                                className="mt-2 w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600"
+                              >
+                                Continuar
+                              </button>
+                            </div>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      ) : (
+                        <div className="bg-gray-300 w-full h-full"></div> // No disponible
+                      )}
+                    </TableCell>
+                  );
+                })}
+              </TableRow>
+            ))}
+          </TableBody>
+        </table>
+      )}
     </div>
   );
 };
