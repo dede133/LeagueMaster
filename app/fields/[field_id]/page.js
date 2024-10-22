@@ -1,27 +1,22 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { getFieldDetails } from '@/lib/services/field';
-import { getFieldAvailability } from '@/lib/services/availability';
+import {
+  getFieldAvailability,
+  getBlockedDates,
+} from '@/lib/services/availability';
+import { getReservationsByFieldAndDate } from '@/lib/services/reservation';
+import { fetchUserData } from '@/lib/services/auth';
 import CustomCarousel from '../../../components/CustomCarousel';
-import ScheduleTable from '@/components/ScheduleTable';
+import ScheduleTable from '@/components/ScheduleTable/ScheduleTable';
 import {
   Card,
   CardContent,
   CardDescription,
-  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-
-const mockAvailability = [
-  { day_of_week: 1, start_time: '03:00:00', end_time: '09:00:00', price: 60 },
-  { day_of_week: 2, start_time: '09:00:00', end_time: '14:00:00', price: 60 },
-];
-
-const mockBlockedDates = [
-  { start_time: '2024-10-18', end_time: null, reason: '' },
-  { start_time: '2024-10-26', end_time: '2024-10-29', reason: '' },
-];
+import { startOfToday, addWeeks, format } from 'date-fns';
 
 const FieldDetails = ({ params }) => {
   const { field_id } = params;
@@ -30,18 +25,34 @@ const FieldDetails = ({ params }) => {
   const [error, setError] = useState(null);
   const [availability, setAvailability] = useState(null);
   const [blockedDates, setBlockedDates] = useState([]);
+  const [reservations, setReservations] = useState([]);
+  const [user, setUser] = useState(null); // Estado para almacenar los datos del usuario
 
+  // Obtener los detalles del campo y la disponibilidad
   useEffect(() => {
     const fetchFieldDetails = async () => {
       if (!field_id) return;
 
       try {
-        const fieldData = await getFieldDetails(field_id);
-        const { weeklyAvailability, blockedDates } =
-          await getFieldAvailability(field_id);
+        const fieldData = await getFieldDetails(field_id); // Detalles del campo
+
+        // Calcular el rango de las próximas dos semanas
+        const today = startOfToday();
+        const twoWeeksLater = addWeeks(today, 2);
+        const startDate = format(today, 'yyyy-MM-dd');
+        const endDate = format(twoWeeksLater, 'yyyy-MM-dd');
+
+        // Hacer las peticiones de disponibilidad y fechas bloqueadas en paralelo
+        const [weeklyAvailability, blockedDates, reservations] =
+          await Promise.all([
+            getFieldAvailability(field_id), // Disponibilidad semanal
+            getBlockedDates(field_id, startDate, endDate), // Fechas bloqueadas dentro del rango
+            getReservationsByFieldAndDate(field_id, startDate, endDate),
+          ]);
 
         setAvailability(weeklyAvailability);
         setBlockedDates(blockedDates);
+        setReservations(reservations);
         setField(fieldData);
       } catch (error) {
         setError(error.message);
@@ -52,6 +63,19 @@ const FieldDetails = ({ params }) => {
 
     fetchFieldDetails();
   }, [field_id]);
+  // Obtener los datos del usuario autenticado
+  useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        const userData = await fetchUserData(); // Llamar a la función que obtiene los datos del usuario
+        setUser(userData); // Guardar el usuario en el estado
+      } catch (error) {
+        console.error('Error al obtener los datos del usuario:', error);
+      }
+    };
+
+    fetchUser();
+  }, []);
 
   if (loading) return <p>Cargando detalles del campo...</p>;
   if (error) return <p>Error: {error}</p>;
@@ -83,8 +107,11 @@ const FieldDetails = ({ params }) => {
               </CardHeader>
               <CardContent className=" flex justify-center">
                 <ScheduleTable
-                  availability={availability}
+                  availability={availability.weeklyAvailability}
                   blockedDates={blockedDates}
+                  reservations={reservations}
+                  user={user}
+                  field_id={field_id}
                 />
               </CardContent>
             </Card>
