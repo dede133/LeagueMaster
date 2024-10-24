@@ -1,8 +1,11 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { X } from 'lucide-react';
 import { getUserFields } from '@/lib/services/field';
-import { getFieldAvailability } from '@/lib/services/availability';
+import {
+  getFieldAvailability,
+  getBlockedDates,
+} from '@/lib/services/availability';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -36,8 +39,10 @@ const AdminFieldManagement = () => {
   const [fields, setFields] = useState([]);
   const [selectedField, setSelectedField] = useState(null);
   const [availability, setAvailability] = useState({});
-  const [blockedDates, setBlockedDates] = useState();
+  const [availabilityList, setAvailabilityList] = useState({});
+  const [blockedDate, setBlockedDate] = useState();
   const [blockedDatesList, setBlockedDatesList] = useState([]);
+  const [newBlockedDatesList, setNewBlockedDatesList] = useState([]);
   const [isCardActive, setIsCardActive] = useState(
     daysOfWeek.reduce((acc, day) => ({ ...acc, [day]: true }), {})
   );
@@ -63,11 +68,34 @@ const AdminFieldManagement = () => {
       if (!selectedField) return;
 
       try {
-        const { weeklyAvailability, blockedDates } = await getFieldAvailability(
+        const weeklyAvailability = await getFieldAvailability(
           selectedField.field_id
         );
+
+        const blockedDates = await getBlockedDates(selectedField.field_id);
+        console.log(weeklyAvailability, blockedDates);
+
+        const availabilityByDay = weeklyAvailability.reduce(
+          (acc, availability) => {
+            // Simplemente recortamos los últimos 3 caracteres de start_time y end_time
+            const cleanStartTime = availability.start_time.slice(0, -3);
+            const cleanEndTime = availability.end_time.slice(0, -3);
+
+            acc[availability.day_of_week] = {
+              start_time: cleanStartTime,
+              end_time: cleanEndTime,
+            };
+
+            return acc;
+          },
+          {}
+        );
+
+        console.log(availabilityByDay);
         setAvailability(weeklyAvailability);
-        setBlockedDates(blockedDates);
+        setAvailabilityList(availabilityByDay);
+        setBlockedDatesList(blockedDates);
+        setNewBlockedDatesList(blockedDates);
       } catch (error) {
         console.error(error.message);
       }
@@ -211,7 +239,7 @@ const AdminFieldManagement = () => {
           <h2 className="text-lg font-bold mb-2 text-center">
             Horas de abertura
           </h2>
-          {daysOfWeek.map((day) => (
+          {daysOfWeek.map((day, index) => (
             <Card
               key={day}
               className={`w-full h-auto text-white shadow-md rounded-md transition-opacity duration-300 mb-4 ${isCardActive[day] ? 'opacity-100' : 'opacity-50'}`}
@@ -241,7 +269,12 @@ const AdminFieldManagement = () => {
                       value={availability[day]?.startTime || ''}
                     >
                       <SelectTrigger className="w-full text-black bg-white">
-                        <SelectValue placeholder="Hora de apertura" />
+                        <SelectValue
+                          placeholder={
+                            availabilityList[index + 1]?.start_time ||
+                            'Abertura'
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {Array.from({ length: 24 }, (_, i) => (
@@ -268,7 +301,11 @@ const AdminFieldManagement = () => {
                       value={availability[day]?.endTime || ''}
                     >
                       <SelectTrigger className="w-full text-black bg-white">
-                        <SelectValue placeholder="Hora de cierre" />
+                        <SelectValue
+                          placeholder={
+                            availabilityList[index + 1]?.end_time || 'Cierre'
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {Array.from({ length: 24 }, (_, i) => (
@@ -306,12 +343,13 @@ const AdminFieldManagement = () => {
                       >
                         <span>
                           {range.from
-                            ? `Desde ${new Date(range.from).toLocaleDateString()}`
+                            ? `Desde ${new Date(range.from).toISOString().split('T')[0]}`
                             : ''}
                           {range.to
-                            ? ` hasta ${new Date(range.to).toLocaleDateString()}`
+                            ? ` hasta ${new Date(range.to).toISOString().split('T')[0]}`
                             : ''}
                         </span>
+
                         <button
                           onClick={() => handleDeleteBlockedDate(index)} // Función para eliminar la fecha
                           className="text-red-600 hover:text-red-800 ml-4"
@@ -352,12 +390,12 @@ const AdminFieldManagement = () => {
           </DialogHeader>
           <Calendar
             mode="range"
-            selected={blockedDates}
-            onSelect={setBlockedDates}
+            selected={blockedDate}
+            onSelect={setBlockedDate}
           />
           <DialogFooter>
             <Button onClick={handleModalClose}>Cerrar</Button>
-            <Button onClick={() => handleBlockedDateList(blockedDates)}>
+            <Button onClick={() => handleBlockedDateList(blockedDate)}>
               Guardar fechas bloqueadas
             </Button>
           </DialogFooter>

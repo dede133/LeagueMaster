@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { getFieldDetails } from '@/lib/services/field';
 import {
   getFieldAvailability,
-  getBlockedDates,
+  getBlockedDatesByDate,
 } from '@/lib/services/availability';
 import { getReservationsByFieldAndDate } from '@/lib/services/reservation';
 import { fetchUserData } from '@/lib/services/auth';
@@ -46,7 +46,7 @@ const FieldDetails = ({ params }) => {
         const [weeklyAvailability, blockedDates, reservations] =
           await Promise.all([
             getFieldAvailability(field_id), // Disponibilidad semanal
-            getBlockedDates(field_id, startDate, endDate), // Fechas bloqueadas dentro del rango
+            getBlockedDatesByDate(field_id, startDate, endDate), // Fechas bloqueadas dentro del rango
             getReservationsByFieldAndDate(field_id, startDate, endDate),
           ]);
 
