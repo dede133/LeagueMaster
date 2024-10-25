@@ -1,4 +1,3 @@
-// BlockedDatesManager.js
 'use client';
 import { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
@@ -13,13 +12,14 @@ import {
 } from '@/components/ui/dialog';
 import { Calendar } from '@/components/ui/calendar';
 
-const BlockedDatesManager = ({ fieldId, initialBlockedDates, onUpdate }) => {
+const BlockedDatesManager = ({ initialBlockedDates, onUpdate }) => {
   const [blockedDatesList, setBlockedDatesList] = useState(
     initialBlockedDates || []
   );
   const [blockedDate, setBlockedDate] = useState();
   const [showModal, setShowModal] = useState(false);
 
+  // Actualizar el estado cuando initialBlockedDates cambia
   useEffect(() => {
     setBlockedDatesList(initialBlockedDates);
   }, [initialBlockedDates]);
@@ -32,62 +32,47 @@ const BlockedDatesManager = ({ fieldId, initialBlockedDates, onUpdate }) => {
     setShowModal(false);
   };
 
-  const handleAddBlockedDate = (selectedRange) => {
-    if (selectedRange) {
-      setBlockedDatesList((prev) => [...prev, selectedRange]);
+  const handleAddBlockedDate = () => {
+    if (blockedDate) {
+      // Formatear las fechas 'from' y 'to' para mantener la zona horaria local
+      const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}T00:00:00.000Z`; // Mantener la hora fija en 00:00:00
+      };
+
+      const fromDate = formatDate(new Date(blockedDate.from));
+      const toDate = blockedDate.to
+        ? formatDate(new Date(blockedDate.to))
+        : fromDate;
+
+      // Crear el objeto con los valores formateados
+      const newBlockedDate = { from: fromDate, to: toDate };
+
+      // Verificar si la fecha o el rango ya existe en la lista
+      const exists = blockedDatesList.some(
+        (date) =>
+          date.from === newBlockedDate.from && date.to === newBlockedDate.to
+      );
+
+      if (!exists) {
+        const newList = [...blockedDatesList, newBlockedDate];
+        setBlockedDatesList(newList);
+        console.log(newList);
+        onUpdate(newList); // Notificar al componente padre con la lista actualizada
+      } else {
+        alert('Esta fecha ya está bloqueada');
+      }
     }
     setShowModal(false);
   };
 
   const handleDeleteBlockedDate = (index) => {
-    setBlockedDatesList((prev) => prev.filter((_, i) => i !== index));
-  };
-
-  const handleConfirmChanges = async () => {
-    try {
-      // Find new dates to add and dates to remove based on the initialBlockedDates
-      const datesToAdd = blockedDatesList.filter(
-        (newDate) =>
-          !initialBlockedDates.some(
-            (initialDate) =>
-              initialDate.from === newDate.from && initialDate.to === newDate.to
-          )
-      );
-
-      const datesToRemove = initialBlockedDates.filter(
-        (initialDate) =>
-          !blockedDatesList.some(
-            (newDate) =>
-              newDate.from === initialDate.from && newDate.to === initialDate.to
-          )
-      );
-
-      // Call the API or pass the updates back to the parent component
-      if (datesToAdd.length > 0) {
-        await fetch('/api/addBlockedDates', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(datesToAdd),
-        });
-      }
-
-      if (datesToRemove.length > 0) {
-        await fetch('/api/removeBlockedDates', {
-          method: 'DELETE',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(datesToRemove),
-        });
-      }
-
-      // Update the parent component's state
-      onUpdate(blockedDatesList);
-    } catch (error) {
-      console.error('Error al confirmar cambios:', error);
-    }
+    const newList = blockedDatesList.filter((_, i) => i !== index);
+    setBlockedDatesList(newList);
+    console.log(newList);
+    onUpdate(newList); // Notificar al componente padre con la lista actualizada
   };
 
   return (
@@ -131,13 +116,6 @@ const BlockedDatesManager = ({ fieldId, initialBlockedDates, onUpdate }) => {
         </CardContent>
       </Card>
 
-      <Button
-        onClick={handleConfirmChanges}
-        className="mt-8 w-full bg-blue-600 text-white"
-      >
-        Confirmar cambios
-      </Button>
-
       <Dialog open={showModal} onOpenChange={handleModalClose}>
         <DialogContent>
           <DialogHeader>
@@ -150,7 +128,7 @@ const BlockedDatesManager = ({ fieldId, initialBlockedDates, onUpdate }) => {
           />
           <DialogFooter>
             <Button onClick={handleModalClose}>Cerrar</Button>
-            <Button onClick={() => handleAddBlockedDate(blockedDate)}>
+            <Button onClick={handleAddBlockedDate}>
               Guardar fechas bloqueadas
             </Button>
           </DialogFooter>

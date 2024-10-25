@@ -24,6 +24,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import BlockedDatesManager from '../../components/BlockedDatesManager';
 
 const daysOfWeek = [
   'Lunes',
@@ -40,9 +41,8 @@ const AdminFieldManagement = () => {
   const [selectedField, setSelectedField] = useState(null);
   const [availability, setAvailability] = useState({});
   const [availabilityList, setAvailabilityList] = useState({});
-  const [blockedDate, setBlockedDate] = useState();
   const [blockedDatesList, setBlockedDatesList] = useState([]);
-  const [newBlockedDatesList, setNewBlockedDatesList] = useState([]);
+  const [updatedBlockedDatesList, setUpdatedBlockedDatesList] = useState([]);
   const [isCardActive, setIsCardActive] = useState(
     daysOfWeek.reduce((acc, day) => ({ ...acc, [day]: true }), {})
   );
@@ -73,6 +73,10 @@ const AdminFieldManagement = () => {
         );
 
         const blockedDates = await getBlockedDates(selectedField.field_id);
+        const simplifiedBlockedDates = blockedDates.map(({ from, to }) => ({
+          from,
+          to,
+        }));
         console.log(weeklyAvailability, blockedDates);
 
         const availabilityByDay = weeklyAvailability.reduce(
@@ -91,11 +95,11 @@ const AdminFieldManagement = () => {
           {}
         );
 
-        console.log(availabilityByDay);
+        console.log(simplifiedBlockedDates);
         setAvailability(weeklyAvailability);
         setAvailabilityList(availabilityByDay);
-        setBlockedDatesList(blockedDates);
-        setNewBlockedDatesList(blockedDates);
+        setBlockedDatesList(simplifiedBlockedDates);
+        setUpdatedBlockedDatesList(simplifiedBlockedDates);
       } catch (error) {
         console.error(error.message);
       }
@@ -134,18 +138,6 @@ const AdminFieldManagement = () => {
     console.log('Lista actualizada de fechas bloqueadas:', blockedDatesList);
   }, [blockedDatesList]);
 
-  const handleModalClose = () => {
-    setShowModal(false); // Cerrar el modal después de guardar las fechas
-  };
-
-  const handleModalOpen = () => {
-    setShowModal(true);
-  };
-
-  const handleDeleteBlockedDate = (index) => {
-    setBlockedDatesList((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const handleConfirmChanges = async () => {
     try {
       // Enviar disponibilidad semanal solo si hay días con horarios definidos y están activos
@@ -176,6 +168,7 @@ const AdminFieldManagement = () => {
           body: JSON.stringify(availabilityData),
         });
       }
+
       console.log('Fechas antes:', blockedDatesList);
       // Ajustar las fechas en blockedDates
       if (blockedDatesList && blockedDatesList.length > 0) {
@@ -327,51 +320,11 @@ const AdminFieldManagement = () => {
 
         {/* Sección Fechas Bloqueadas a la derecha */}
         <div>
-          <h2 className="text-lg font-bold mb-4 text-center">
-            Fechas Bloqueadas
-          </h2>
-          <Card className="w-full h-auto shadow-md rounded-md p-4">
-            <CardContent className="flex justify-between">
-              {/* Lista de fechas seleccionadas */}
-              <div className="flex-1 mr-2">
-                {blockedDatesList.length > 0 ? (
-                  <ul className="space-y-2">
-                    {blockedDatesList.map((range, index) => (
-                      <li
-                        key={index}
-                        className="flex justify-between items-center"
-                      >
-                        <span>
-                          {range.from
-                            ? `Desde ${new Date(range.from).toISOString().split('T')[0]}`
-                            : ''}
-                          {range.to
-                            ? ` hasta ${new Date(range.to).toISOString().split('T')[0]}`
-                            : ''}
-                        </span>
-
-                        <button
-                          onClick={() => handleDeleteBlockedDate(index)} // Función para eliminar la fecha
-                          className="text-red-600 hover:text-red-800 ml-4"
-                        >
-                          <X size={20} /> {/* Usar el ícono de Lucide */}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No hay fechas seleccionadas.</p>
-                )}
-              </div>
-
-              {/* Botón de Añadir siempre en la esquina superior derecha */}
-              <div className="flex-none">
-                <Button onClick={handleModalOpen} className="ml-auto">
-                  Añadir
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <BlockedDatesManager
+            fieldId={selectedField?.field_id}
+            initialBlockedDates={updatedBlockedDatesList}
+            onUpdate={setUpdatedBlockedDatesList}
+          />
 
           <Button
             onClick={handleConfirmChanges}
@@ -381,26 +334,6 @@ const AdminFieldManagement = () => {
           </Button>
         </div>
       </div>
-
-      {/* Modal para añadir fechas bloqueadas */}
-      <Dialog open={showModal} onOpenChange={handleModalClose}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Añadir fechas bloqueadas</DialogTitle>
-          </DialogHeader>
-          <Calendar
-            mode="range"
-            selected={blockedDate}
-            onSelect={setBlockedDate}
-          />
-          <DialogFooter>
-            <Button onClick={handleModalClose}>Cerrar</Button>
-            <Button onClick={() => handleBlockedDateList(blockedDate)}>
-              Guardar fechas bloqueadas
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };
