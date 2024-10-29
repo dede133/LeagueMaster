@@ -16,6 +16,8 @@ const BlockedDatesManager = ({ initialBlockedDates, onUpdate }) => {
   const [blockedDatesList, setBlockedDatesList] = useState(
     initialBlockedDates || []
   );
+  const [datesToAdd, setDatesToAdd] = useState([]);
+  const [datesToRemove, setDatesToRemove] = useState([]);
   const [blockedDate, setBlockedDate] = useState();
   const [showModal, setShowModal] = useState(false);
 
@@ -34,12 +36,15 @@ const BlockedDatesManager = ({ initialBlockedDates, onUpdate }) => {
 
   const handleAddBlockedDate = () => {
     if (blockedDate) {
-      // Formatear las fechas 'from' y 'to' para mantener la zona horaria local
+      console.log('Blocked date seleccionada:', blockedDate);
+
       const formatDate = (date) => {
         const year = date.getFullYear();
         const month = String(date.getMonth() + 1).padStart(2, '0');
         const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}T00:00:00.000Z`; // Mantener la hora fija en 00:00:00
+        const formattedDate = `${year}-${month}-${day}T00:00:00.000Z`;
+        console.log('Fecha formateada:', formattedDate);
+        return formattedDate;
       };
 
       const fromDate = formatDate(new Date(blockedDate.from));
@@ -47,20 +52,43 @@ const BlockedDatesManager = ({ initialBlockedDates, onUpdate }) => {
         ? formatDate(new Date(blockedDate.to))
         : fromDate;
 
-      // Crear el objeto con los valores formateados
-      const newBlockedDate = { from: fromDate, to: toDate };
+      console.log('Fecha "from" después de formatear:', fromDate);
+      console.log('Fecha "to" después de formatear:', toDate);
 
-      // Verificar si la fecha o el rango ya existe en la lista
-      const exists = blockedDatesList.some(
+      const newBlockedDate = { from: fromDate, to: toDate };
+      console.log('Nuevo objeto de fecha bloqueada:', newBlockedDate);
+
+      const existsInList = blockedDatesList.some(
         (date) =>
           date.from === newBlockedDate.from && date.to === newBlockedDate.to
       );
+      console.log('¿Existe en la lista actual?:', existsInList);
 
-      if (!exists) {
-        const newList = [...blockedDatesList, newBlockedDate];
-        setBlockedDatesList(newList);
-        console.log(newList);
-        onUpdate(newList); // Notificar al componente padre con la lista actualizada
+      const existsInAdditions = datesToAdd.some(
+        (date) =>
+          date.from === newBlockedDate.from && date.to === newBlockedDate.to
+      );
+      console.log('¿Existe en las fechas a añadir?:', existsInAdditions);
+
+      if (!existsInList && !existsInAdditions) {
+        const updatedBlockedDatesList = [...blockedDatesList, newBlockedDate];
+        const updatedDatesToAdd = [...datesToAdd, newBlockedDate];
+
+        console.log(
+          'Lista de fechas bloqueadas actualizada:',
+          updatedBlockedDatesList
+        );
+        console.log('Lista de fechas a añadir actualizada:', updatedDatesToAdd);
+
+        setBlockedDatesList(updatedBlockedDatesList);
+        setDatesToAdd(updatedDatesToAdd);
+
+        console.log('Llamando a onUpdate con las listas actualizadas.');
+        onUpdate({
+          blockedDatesList: updatedBlockedDatesList,
+          datesToAdd: updatedDatesToAdd,
+          datesToRemove,
+        });
       } else {
         alert('Esta fecha ya está bloqueada');
       }
@@ -69,10 +97,27 @@ const BlockedDatesManager = ({ initialBlockedDates, onUpdate }) => {
   };
 
   const handleDeleteBlockedDate = (index) => {
+    const dateToDelete = blockedDatesList[index];
+
+    // Declaramos la variable fuera del if para poder usarla después
+    let updatedDatesToRemove = datesToRemove;
+
+    const existsInOriginal = initialBlockedDates.some(
+      (date) => date.from === dateToDelete.from && date.to === dateToDelete.to
+    );
+
+    if (existsInOriginal) {
+      updatedDatesToRemove = [...datesToRemove, dateToDelete];
+      setDatesToRemove(updatedDatesToRemove);
+    }
+
     const newList = blockedDatesList.filter((_, i) => i !== index);
     setBlockedDatesList(newList);
-    console.log(newList);
-    onUpdate(newList); // Notificar al componente padre con la lista actualizada
+    onUpdate({
+      blockedDatesList: newList,
+      datesToAdd,
+      datesToRemove: updatedDatesToRemove,
+    });
   };
 
   return (

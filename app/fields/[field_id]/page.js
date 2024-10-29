@@ -49,7 +49,7 @@ const FieldDetails = ({ params }) => {
             getBlockedDatesByDate(field_id, startDate, endDate), // Fechas bloqueadas dentro del rango
             getReservationsByFieldAndDate(field_id, startDate, endDate),
           ]);
-
+        console.log(weeklyAvailability);
         setAvailability(weeklyAvailability);
         setBlockedDates(blockedDates);
         setReservations(reservations);
@@ -107,7 +107,7 @@ const FieldDetails = ({ params }) => {
               </CardHeader>
               <CardContent className=" flex justify-center">
                 <ScheduleTable
-                  availability={availability.weeklyAvailability}
+                  availability={availability}
                   blockedDates={blockedDates}
                   reservations={reservations}
                   user={user}

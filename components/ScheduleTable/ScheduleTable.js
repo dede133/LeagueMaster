@@ -45,7 +45,7 @@ const ScheduleTable = ({
         availableWeeks={availableWeeks} // Pasar las semanas calculadas solo una vez
       />
       <table className="min-w-max table-fixed border-collapse border-spacing-0">
-        <TableHeader weekDates={availableWeeks} />
+        <TableHeader selectedDate={selectedDate} />
         <TableBody
           hours={hours}
           schedule={schedule}

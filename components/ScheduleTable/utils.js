@@ -1,9 +1,9 @@
-import { format, parseISO } from 'date-fns';
+import { format, parseISO, isWithinInterval, isSameDay } from 'date-fns';
 
 export const getHoursRange = (availability) => {
   let earliest = 24;
   let latest = 0;
-
+  console.log(availability);
   // Encontrar la hora más temprana y la más tardía en la disponibilidad
   availability.forEach((day) => {
     const start = parseInt(day.start_time.split(':')[0], 10);
@@ -29,6 +29,7 @@ export const preprocessScheduleData = (
   reservations,
   weeks
 ) => {
+  console.log('blocked', blockedDates);
   const schedule = {}; // Estructura para almacenar la disponibilidad, bloqueos y reservas
   const today = new Date();
   // Paso 1: Iterar sobre las semanas y Availability
@@ -44,10 +45,18 @@ export const preprocessScheduleData = (
         continue;
       }
 
-      // Verificar si el día está bloqueado en Blocked Dates
       const isBlocked = blockedDates.some((blocked) => {
-        const blockedDate = parseISO(blocked.start_time);
-        return format(blockedDate, 'yyyy-MM-dd') === formattedDate; // Comparar fechas formateadas
+        const startDate = parseISO(blocked.start_time);
+        const endDate = blocked.end_time
+          ? parseISO(blocked.end_time)
+          : startDate;
+
+        // Verifica si la fecha actual está dentro del rango o si coincide con el inicio o el final
+        return (
+          isSameDay(currentDate, startDate) || // coincide con la fecha de inicio
+          isSameDay(currentDate, endDate) || // coincide con la fecha de finalización
+          isWithinInterval(currentDate, { start: startDate, end: endDate }) // está entre las fechas
+        );
       });
 
       // Si el día está bloqueado, saltamos a la siguiente iteración
@@ -94,6 +103,6 @@ export const preprocessScheduleData = (
       };
     }
   });
-
+  console.log(schedule);
   return schedule; // Devuelve la estructura con disponibilidad, bloqueos y reservas
 };
