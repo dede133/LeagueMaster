@@ -13,6 +13,7 @@ const TableRow = ({
   const formattedHour = format(hour, 'HH:mm');
   // Calcular el inicio de la semana en base a la fecha seleccionada
   const startOfWeekDate = startOfWeek(selectedDate, { weekStartsOn: 1 });
+  console.log('startOfWeekDate', startOfWeekDate);
   const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
     addDays(startOfWeekDate, i)
   ); // Lista de días en la semana seleccionada

@@ -1,8 +1,13 @@
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
 import { X } from 'lucide-react';
 import { getUserFields } from '@/lib/services/field';
-import { getFieldAvailability } from '@/lib/services/availability';
+import {
+  getFieldAvailability,
+  getBlockedDates,
+  removeBlockedDates,
+  addBlockedDates,
+} from '@/lib/services/availability';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardTitle } from '@/components/ui/card';
 import { Switch } from '@/components/ui/switch';
@@ -21,6 +26,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import BlockedDatesManager from '../../components/BlockedDatesManager';
 
 const daysOfWeek = [
   'Lunes',
@@ -36,8 +42,11 @@ const AdminFieldManagement = () => {
   const [fields, setFields] = useState([]);
   const [selectedField, setSelectedField] = useState(null);
   const [availability, setAvailability] = useState({});
-  const [blockedDates, setBlockedDates] = useState();
+  const [availabilityList, setAvailabilityList] = useState({});
   const [blockedDatesList, setBlockedDatesList] = useState([]);
+  const [datesToAdd, setDatesToAdd] = useState([]);
+  const [datesToRemove, setDatesToRemove] = useState([]);
+  const [updatedBlockedDatesList, setUpdatedBlockedDatesList] = useState([]);
   const [isCardActive, setIsCardActive] = useState(
     daysOfWeek.reduce((acc, day) => ({ ...acc, [day]: true }), {})
   );
@@ -63,11 +72,35 @@ const AdminFieldManagement = () => {
       if (!selectedField) return;
 
       try {
-        const { weeklyAvailability, blockedDates } = await getFieldAvailability(
+        const weeklyAvailability = await getFieldAvailability(
           selectedField.field_id
         );
+
+        const blockedDates = await getBlockedDates(selectedField.field_id);
+        const simplifiedBlockedDates = blockedDates.map(({ from, to }) => ({
+          from,
+          to,
+        }));
+        console.log('AA', simplifiedBlockedDates);
+        const availabilityByDay = weeklyAvailability.reduce(
+          (acc, availability) => {
+            // Simplemente recortamos los últimos 3 caracteres de start_time y end_time
+            const cleanStartTime = availability.start_time.slice(0, -3);
+            const cleanEndTime = availability.end_time.slice(0, -3);
+
+            acc[availability.day_of_week] = {
+              start_time: cleanStartTime,
+              end_time: cleanEndTime,
+            };
+
+            return acc;
+          },
+          {}
+        );
         setAvailability(weeklyAvailability);
-        setBlockedDates(blockedDates);
+        setAvailabilityList(availabilityByDay);
+        setBlockedDatesList(simplifiedBlockedDates);
+        setUpdatedBlockedDatesList(simplifiedBlockedDates);
       } catch (error) {
         console.error(error.message);
       }
@@ -106,77 +139,77 @@ const AdminFieldManagement = () => {
     console.log('Lista actualizada de fechas bloqueadas:', blockedDatesList);
   }, [blockedDatesList]);
 
-  const handleModalClose = () => {
-    setShowModal(false); // Cerrar el modal después de guardar las fechas
-  };
-
-  const handleModalOpen = () => {
-    setShowModal(true);
-  };
-
-  const handleDeleteBlockedDate = (index) => {
-    setBlockedDatesList((prev) => prev.filter((_, i) => i !== index));
-  };
-
   const handleConfirmChanges = async () => {
     try {
-      // Enviar disponibilidad semanal solo si hay días con horarios definidos y están activos
-      const availabilityData = Object.keys(availability).reduce((acc, day) => {
-        const startTime = availability[day]?.startTime;
-        const endTime = availability[day]?.endTime;
-
-        if (startTime && endTime && isCardActive[day]) {
-          acc.push({
-            field_id: selectedField.field_id,
-            day_of_week: daysOfWeek.indexOf(day) + 1,
-            start_time: startTime,
-            end_time: endTime,
-            price: 60,
-            available_durations: [60],
-          });
-        }
-        return acc;
-      }, []);
-
-      if (availabilityData.length > 0) {
-        console.log('Disponibilidad semanal:', availabilityData);
-        await fetch('http://localhost:5000/api/availability/weekly', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(availabilityData),
-        });
-      }
-      console.log('Fechas antes:', blockedDatesList);
-      // Ajustar las fechas en blockedDates
-      if (blockedDatesList && blockedDatesList.length > 0) {
-        console.log('Fechas  before map:', blockedDatesList);
-        const blockedData = blockedDatesList.map(({ from, to }) => ({
-          field_id: selectedField.field_id,
-          // Usar toLocaleDateString o una solución manual para mantener la zona horaria local
-          start_time: from ? from.toLocaleDateString('en-CA') : null, // formato ISO pero en local
-          end_time: to ? to.toLocaleDateString('en-CA') : null,
-        }));
-        console.log('Fechas bloqueadas after map:', blockedData);
-
-        // Aquí podrías hacer el fetch para subir blockedData
-        await fetch('http://localhost:5000/api/availability/blocked', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(blockedData),
-        });
-      } else {
-        console.log(
-          'No hay fechas bloqueadas seleccionadas.',
-          blockedDatesList
-        );
-      }
+      await saveWeeklyAvailabilityData();
+      await manageBlockedDates();
     } catch (error) {
       console.error('Error al confirmar cambios:', error);
     }
+  };
+
+  // Encapsulamos la lógica de guardar disponibilidad semanal en una función asíncrona separada
+  const saveWeeklyAvailabilityData = async () => {
+    const availabilityData = Object.keys(availability).reduce((acc, day) => {
+      const startTime = availability[day]?.startTime;
+      const endTime = availability[day]?.endTime;
+
+      if (startTime && endTime && isCardActive[day]) {
+        acc.push({
+          field_id: selectedField.field_id,
+          day_of_week: daysOfWeek.indexOf(day) + 1,
+          start_time: startTime,
+          end_time: endTime,
+          price: 60,
+          available_durations: [60],
+        });
+      }
+      return acc;
+    }, []);
+
+    if (availabilityData.length > 0) {
+      try {
+        await saveWeeklyAvailability(availabilityData);
+        console.log('Disponibilidad guardada exitosamente.');
+      } catch (error) {
+        console.error('Error al guardar la disponibilidad semanal:', error);
+        throw error;
+      }
+    }
+  };
+
+  // Encapsulamos la lógica de gestionar fechas bloqueadas en una función asíncrona separada
+  const manageBlockedDates = async () => {
+    try {
+      if (datesToAdd.length > 0) {
+        console.log('Fechas a añadir:', datesToAdd);
+        await addBlockedDates(datesToAdd, selectedField.field_id);
+        console.log('Fechas bloqueadas añadidas correctamente.');
+      }
+
+      if (datesToRemove.length > 0) {
+        console.log('Fechas a eliminar:', datesToRemove);
+        await removeBlockedDates(datesToRemove, selectedField.field_id);
+        console.log('Fechas bloqueadas eliminadas correctamente.');
+      }
+
+      // Reiniciar las listas después de completar las operaciones
+      setDatesToAdd([]);
+      setDatesToRemove([]);
+    } catch (error) {
+      console.error('Error al gestionar las fechas bloqueadas:', error);
+      throw error;
+    }
+  };
+
+  const handleUpdateBlockedDates = ({
+    blockedDatesList,
+    datesToAdd,
+    datesToRemove,
+  }) => {
+    setBlockedDatesList(blockedDatesList);
+    setDatesToAdd(datesToAdd);
+    setDatesToRemove(datesToRemove);
   };
 
   return (
@@ -211,7 +244,7 @@ const AdminFieldManagement = () => {
           <h2 className="text-lg font-bold mb-2 text-center">
             Horas de abertura
           </h2>
-          {daysOfWeek.map((day) => (
+          {daysOfWeek.map((day, index) => (
             <Card
               key={day}
               className={`w-full h-auto text-white shadow-md rounded-md transition-opacity duration-300 mb-4 ${isCardActive[day] ? 'opacity-100' : 'opacity-50'}`}
@@ -241,7 +274,12 @@ const AdminFieldManagement = () => {
                       value={availability[day]?.startTime || ''}
                     >
                       <SelectTrigger className="w-full text-black bg-white">
-                        <SelectValue placeholder="Hora de apertura" />
+                        <SelectValue
+                          placeholder={
+                            availabilityList[index + 1]?.start_time ||
+                            'Abertura'
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {Array.from({ length: 24 }, (_, i) => (
@@ -268,7 +306,11 @@ const AdminFieldManagement = () => {
                       value={availability[day]?.endTime || ''}
                     >
                       <SelectTrigger className="w-full text-black bg-white">
-                        <SelectValue placeholder="Hora de cierre" />
+                        <SelectValue
+                          placeholder={
+                            availabilityList[index + 1]?.end_time || 'Cierre'
+                          }
+                        />
                       </SelectTrigger>
                       <SelectContent>
                         {Array.from({ length: 24 }, (_, i) => (
@@ -290,50 +332,11 @@ const AdminFieldManagement = () => {
 
         {/* Sección Fechas Bloqueadas a la derecha */}
         <div>
-          <h2 className="text-lg font-bold mb-4 text-center">
-            Fechas Bloqueadas
-          </h2>
-          <Card className="w-full h-auto shadow-md rounded-md p-4">
-            <CardContent className="flex justify-between">
-              {/* Lista de fechas seleccionadas */}
-              <div className="flex-1 mr-2">
-                {blockedDatesList.length > 0 ? (
-                  <ul className="space-y-2">
-                    {blockedDatesList.map((range, index) => (
-                      <li
-                        key={index}
-                        className="flex justify-between items-center"
-                      >
-                        <span>
-                          {range.from
-                            ? `Desde ${new Date(range.from).toLocaleDateString()}`
-                            : ''}
-                          {range.to
-                            ? ` hasta ${new Date(range.to).toLocaleDateString()}`
-                            : ''}
-                        </span>
-                        <button
-                          onClick={() => handleDeleteBlockedDate(index)} // Función para eliminar la fecha
-                          className="text-red-600 hover:text-red-800 ml-4"
-                        >
-                          <X size={20} /> {/* Usar el ícono de Lucide */}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p>No hay fechas seleccionadas.</p>
-                )}
-              </div>
-
-              {/* Botón de Añadir siempre en la esquina superior derecha */}
-              <div className="flex-none">
-                <Button onClick={handleModalOpen} className="ml-auto">
-                  Añadir
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+          <BlockedDatesManager
+            fieldId={selectedField?.field_id}
+            initialBlockedDates={blockedDatesList}
+            onUpdate={handleUpdateBlockedDates}
+          />
 
           <Button
             onClick={handleConfirmChanges}
@@ -343,26 +346,6 @@ const AdminFieldManagement = () => {
           </Button>
         </div>
       </div>
-
-      {/* Modal para añadir fechas bloqueadas */}
-      <Dialog open={showModal} onOpenChange={handleModalClose}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Añadir fechas bloqueadas</DialogTitle>
-          </DialogHeader>
-          <Calendar
-            mode="range"
-            selected={blockedDates}
-            onSelect={setBlockedDates}
-          />
-          <DialogFooter>
-            <Button onClick={handleModalClose}>Cerrar</Button>
-            <Button onClick={() => handleBlockedDateList(blockedDates)}>
-              Guardar fechas bloqueadas
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 };

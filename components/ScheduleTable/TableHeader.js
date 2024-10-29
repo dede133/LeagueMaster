@@ -1,4 +1,6 @@
-const TableHeader = () => {
+import { addDays, startOfWeek, format } from 'date-fns';
+
+const TableHeader = (selectedDate) => {
   const daysOfWeek = [
     'Lunes',
     'Martes',
@@ -8,6 +10,12 @@ const TableHeader = () => {
     'Sábado',
     'Domingo',
   ];
+  console.log('selecteddate', selectedDate);
+  const startOfWeekDate = startOfWeek(selectedDate, { weekStartsOn: 1 });
+
+  const daysOfWeekDate = Array.from({ length: 7 }, (_, i) =>
+    addDays(startOfWeekDate, i)
+  ); // Lista de días en la semana seleccionada
 
   return (
     <thead className="sticky top-0 bg-white z-10">
