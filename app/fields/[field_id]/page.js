@@ -1,4 +1,5 @@
 'use client';
+import React, { memo } from 'react';
 import { useState, useEffect } from 'react';
 import { getFieldDetails } from '@/lib/services/field';
 import {
@@ -18,7 +19,7 @@ import {
 } from '@/components/ui/card';
 import { startOfToday, addWeeks, format } from 'date-fns';
 
-const FieldDetails = ({ params }) => {
+const FieldDetails = memo(({ params }) => {
   const { field_id } = params;
   const [field, setField] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -32,16 +33,13 @@ const FieldDetails = ({ params }) => {
   useEffect(() => {
     const fetchFieldDetails = async () => {
       if (!field_id) return;
-
       try {
         const fieldData = await getFieldDetails(field_id); // Detalles del campo
-
         // Calcular el rango de las próximas dos semanas
         const today = startOfToday();
         const twoWeeksLater = addWeeks(today, 2);
         const startDate = format(today, 'yyyy-MM-dd');
         const endDate = format(twoWeeksLater, 'yyyy-MM-dd');
-
         // Hacer las peticiones de disponibilidad y fechas bloqueadas en paralelo
         const [weeklyAvailability, blockedDates, reservations] =
           await Promise.all([
@@ -49,7 +47,6 @@ const FieldDetails = ({ params }) => {
             getBlockedDatesByDate(field_id, startDate, endDate), // Fechas bloqueadas dentro del rango
             getReservationsByFieldAndDate(field_id, startDate, endDate),
           ]);
-        console.log(weeklyAvailability);
         setAvailability(weeklyAvailability);
         setBlockedDates(blockedDates);
         setReservations(reservations);
@@ -60,21 +57,23 @@ const FieldDetails = ({ params }) => {
         setLoading(false);
       }
     };
-
     fetchFieldDetails();
   }, [field_id]);
-  // Obtener los datos del usuario autenticado
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const userData = await fetchUserData(); // Llamar a la función que obtiene los datos del usuario
-        setUser(userData); // Guardar el usuario en el estado
+        const userData = await fetchUserData();
+        setUser(userData);
       } catch (error) {
         console.error('Error al obtener los datos del usuario:', error);
       }
     };
-
     fetchUser();
+
+    return () => {
+      console.log('Cleaning up Fetch User effect');
+    };
   }, []);
 
   if (loading) return <p>Cargando detalles del campo...</p>;
@@ -205,6 +204,6 @@ const FieldDetails = ({ params }) => {
       </div>
     </>
   );
-};
+});
 
 export default FieldDetails;

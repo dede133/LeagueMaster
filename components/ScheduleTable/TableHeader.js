@@ -10,7 +10,6 @@ const TableHeader = (selectedDate) => {
     'Sábado',
     'Domingo',
   ];
-  console.log('selecteddate', selectedDate);
   const startOfWeekDate = startOfWeek(selectedDate, { weekStartsOn: 1 });
 
   const daysOfWeekDate = Array.from({ length: 7 }, (_, i) =>

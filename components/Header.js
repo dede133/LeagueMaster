@@ -11,13 +11,9 @@ const Header = () => {
   const [userRole, setUserRole] = useState(null);
   const [loading, setLoading] = useState(true); // Estado de carga
   const router = useRouter();
-
   useEffect(() => {
-    console.log('useEffect ejecutándose');
     const checkAuth = async () => {
       try {
-        console.log('Iniciando petición para verificar autenticación...');
-
         const response = await fetch(
           'http://localhost:5000/api/auth/check-auth',
           {
@@ -40,22 +36,17 @@ const Header = () => {
         }
 
         const data = await response.json();
-        console.log('Respuesta del servidor:', data);
-        console.log('User role:', data.user.user_role);
 
         if (data.isAuthenticated) {
-          console.log('Usuario autenticado');
           setIsAuthenticated(true);
           setUserRole(data.user.user_role);
         } else {
-          console.log('Usuario no autenticado');
           setIsAuthenticated(false);
         }
       } catch (error) {
-        console.error('Error al hacer el fetch:', error);
         setIsAuthenticated(false);
       } finally {
-        setLoading(false); // Detener la carga después de verificar la autenticación
+        setLoading(false);
       }
     };
 
@@ -66,10 +57,8 @@ const Header = () => {
   const handleProfileClick = () => {
     if (!loading) {
       if (isAuthenticated) {
-        console.log('Redirigiendo al perfil');
         router.push('/profile'); // Si está autenticado, redirigir al perfil
       } else {
-        console.log('Redirigiendo al login');
         router.push('/login'); // Si no está autenticado, redirigir al login
       }
     }

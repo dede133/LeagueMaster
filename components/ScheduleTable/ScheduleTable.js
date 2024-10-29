@@ -25,6 +25,7 @@ const ScheduleTable = ({
     weekStartsOn: 1,
   });
   const availableWeeks = [firstDayOfCurrentWeek, secondWeek, thirdWeek];
+
   useEffect(() => {
     const processedSchedule = preprocessScheduleData(
       availability,
