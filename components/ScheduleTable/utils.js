@@ -3,7 +3,7 @@ import { format, parseISO, isWithinInterval, isSameDay } from 'date-fns';
 export const getHoursRange = (availability) => {
   let earliest = 24;
   let latest = 0;
-  console.log(availability);
+
   // Encontrar la hora más temprana y la más tardía en la disponibilidad
   availability.forEach((day) => {
     const start = parseInt(day.start_time.split(':')[0], 10);
@@ -29,7 +29,6 @@ export const preprocessScheduleData = (
   reservations,
   weeks
 ) => {
-  console.log('blocked', blockedDates);
   const schedule = {}; // Estructura para almacenar la disponibilidad, bloqueos y reservas
   const today = new Date();
   // Paso 1: Iterar sobre las semanas y Availability
@@ -103,6 +102,6 @@ export const preprocessScheduleData = (
       };
     }
   });
-  console.log(schedule);
+
   return schedule; // Devuelve la estructura con disponibilidad, bloqueos y reservas
 };

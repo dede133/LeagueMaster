@@ -18,7 +18,6 @@ const TableBody = ({
           setSchedule={setSchedule}
           user={user}
           field_id={field_id}
-          hourIndex={hourIndex}
           selectedDate={selectedDate}
         />
       ))}

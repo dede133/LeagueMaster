@@ -9,7 +9,7 @@ export default function Home() {
   const [fields, setFields] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
+  console.log('home render');
   useEffect(() => {
     const loadFields = async () => {
       try {

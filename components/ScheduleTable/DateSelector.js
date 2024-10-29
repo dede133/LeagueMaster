@@ -23,7 +23,6 @@ const DateSelector = ({ selectedDate, setSelectedDate, availableWeeks }) => {
   const endOfAvailablePeriod = addDays(availableWeeks[2], 6);
 
   const handleDateSelect = (date) => {
-    console.log('first', date);
     setSelectedDate(date);
     setIsOpen(false); // Cierra el popover al seleccionar una fecha
   };
