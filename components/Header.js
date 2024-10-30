@@ -1,65 +1,22 @@
+// components/Header.js
 'use client';
 
 import React from 'react';
 import Link from 'next/link';
 import { PersonIcon } from '@radix-ui/react-icons';
-import { useEffect, useState } from 'react';
+import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
 
 const Header = () => {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [userRole, setUserRole] = useState(null);
-  const [loading, setLoading] = useState(true); // Estado de carga
+  const { isAuthenticated, userRole, loading } = useAuth();
   const router = useRouter();
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await fetch(
-          'http://localhost:5000/api/auth/check-auth',
-          {
-            method: 'GET',
-            credentials: 'include', // Esto asegura que las cookies se envíen
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        if (!response.ok) {
-          console.error(
-            'Error en la respuesta del servidor:',
-            response.statusText
-          );
-          setIsAuthenticated(false);
-          setLoading(false);
-          return;
-        }
-
-        const data = await response.json();
-
-        if (data.isAuthenticated) {
-          setIsAuthenticated(true);
-          setUserRole(data.user.user_role);
-        } else {
-          setIsAuthenticated(false);
-        }
-      } catch (error) {
-        setIsAuthenticated(false);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    // Llamada inicial para verificar autenticación
-    checkAuth();
-  }, [router]);
 
   const handleProfileClick = () => {
     if (!loading) {
       if (isAuthenticated) {
-        router.push('/profile'); // Si está autenticado, redirigir al perfil
+        router.push('/profile');
       } else {
-        router.push('/login'); // Si no está autenticado, redirigir al login
+        router.push('/login');
       }
     }
   };
@@ -67,7 +24,6 @@ const Header = () => {
   return (
     <header className="text-gray-600 body-font">
       <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-        {/* Logotipo o Nombre de la Plataforma */}
         <Link
           href="/"
           className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0"
@@ -87,7 +43,6 @@ const Header = () => {
           <span className="ml-3 text-xl hover:text-blue-700">LeagueMaster</span>
         </Link>
 
-        {/* Menú de Navegación */}
         <nav className="md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center">
           <Link href="/" className="mr-5 hover:text-gray-900">
             Inicio
@@ -108,10 +63,10 @@ const Header = () => {
             Tus campos
           </Link>
         )}
-        {/* Botón de Llamada a la Acción: Iniciar Sesión */}
+
         <button
           onClick={handleProfileClick}
-          disabled={loading} // Deshabilitar el botón mientras está cargando
+          disabled={loading}
           className="inline-flex items-center bg-blue-500 border-0 py-1 px-3 focus:outline-none hover:bg-blue-700 rounded text-white mt-4 md:mt-0"
         >
           <PersonIcon />
