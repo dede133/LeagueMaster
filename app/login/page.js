@@ -3,23 +3,23 @@
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { login } from '@/lib/services/auth';
+import { useAuth } from '@/context/AuthContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
+  const { loginUser } = useAuth(); // Usamos el contexto para loginUser
   const router = useRouter();
 
   const handleLogin = async (event) => {
     event.preventDefault();
 
     try {
-      const data = await login(email, password);
-      console.log('Inicio de sesión exitoso:', data);
+      await loginUser(email, password); // Llamada a loginUser en lugar de login
       setMessage('Inicio de sesión exitoso');
-      router.push('/profile');
+      router.push('/profile'); // Redirigir a la página de perfil
     } catch (error) {
       console.error('Error de red o del servidor:', error);
       setError(error.message);

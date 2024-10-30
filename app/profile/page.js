@@ -3,18 +3,17 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import useRequireAuth from '../../hooks/useRequireAuth';
-import { logout, deleteAccount } from '@/lib/services/auth';
+import { deleteAccount } from '@/lib/services/auth';
+import { useAuth } from '@/context/AuthContext';
 
 const ProfilePage = () => {
   const { user, loading, error, setUser } = useRequireAuth();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const { logoutUser } = useAuth(); // Usamos logoutUser del contexto
   const router = useRouter();
 
-  //useRequireAuth(user);
-
   useEffect(() => {
-    // Actualiza los estados específicos cuando el usuario está cargado
     if (user) {
       setName(user.name);
       setEmail(user.email);
@@ -28,7 +27,7 @@ const ProfilePage = () => {
 
   const handleLogout = async () => {
     try {
-      await logout();
+      await logoutUser(); // Usamos logoutUser en lugar de logout directo
       console.log('Sesión cerrada con éxito');
       router.push('/login');
     } catch (error) {
@@ -54,6 +53,7 @@ const ProfilePage = () => {
       await deleteAccount(user.id);
       console.log('Cuenta eliminada con éxito');
       alert('Cuenta eliminada con éxito.');
+      await logoutUser(); // Cerramos sesión después de eliminar la cuenta
       router.push('/');
     } catch (error) {
       console.error('Error al eliminar la cuenta:', error);
