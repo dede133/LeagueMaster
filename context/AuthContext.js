@@ -9,6 +9,7 @@ const AuthContext = createContext();
 export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [userRole, setUserRole] = useState(null);
+  const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
   const loginUser = async (email, password) => {
@@ -16,6 +17,7 @@ export const AuthProvider = ({ children }) => {
       const data = await login(email, password);
       setIsAuthenticated(true);
       setUserRole(data.user.user_role);
+      setUser(data.user);
     } catch (error) {
       console.error('Error al iniciar sesión:', error);
       throw error;
@@ -27,6 +29,7 @@ export const AuthProvider = ({ children }) => {
       await logout();
       setIsAuthenticated(false);
       setUserRole(null);
+      setUser(null);
     } catch (error) {
       console.error('Error al cerrar sesión:', error);
       throw error;
@@ -40,14 +43,17 @@ export const AuthProvider = ({ children }) => {
         if (data.isAuthenticated) {
           setIsAuthenticated(true);
           setUserRole(data.user.user_role);
+          setUser(data.user);
         } else {
           setIsAuthenticated(false);
           setUserRole(null);
+          setUser(null);
         }
       } catch (error) {
         console.error(error);
         setIsAuthenticated(false);
         setUserRole(null);
+        setUser(null);
       } finally {
         setLoading(false);
       }
@@ -61,9 +67,10 @@ export const AuthProvider = ({ children }) => {
       value={{
         isAuthenticated,
         userRole,
+        user,
         loading,
         loginUser,
-        logoutUser, // Agregamos logoutUser al contexto
+        logoutUser,
       }}
     >
       {children}

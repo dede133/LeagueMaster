@@ -20,7 +20,7 @@ const ReservationButton = ({
   const [openDropdown, setOpenDropdown] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const buttonColor =
-    status === 'available'
+    status === 'available' || status === 'cancelled'
       ? 'bg-white hover:bg-blue-500 text-gray-700'
       : status === 'reserved'
         ? 'bg-gray-500 cursor-not-allowed'
@@ -74,9 +74,9 @@ const ReservationButton = ({
   return (
     <div
       className={`inline-block align-top h-full w-full ${buttonColor}`}
-      disabled={status !== 'available'}
+      disabled={status !== 'available' && status !== 'cancelled'}
     >
-      {status === 'available' && (
+      {(status === 'available' || status === 'cancelled') && ( // Permitir que los estados 'available' y 'cancelled' abran el menú
         <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
           <DropdownMenuTrigger asChild>
             <div
