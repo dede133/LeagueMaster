@@ -29,6 +29,7 @@ export const preprocessScheduleData = (
   reservations,
   weeks
 ) => {
+  console.log(reservations);
   const schedule = {}; // Estructura para almacenar la disponibilidad, bloqueos y reservas
   const today = new Date();
   // Paso 1: Iterar sobre las semanas y Availability
@@ -98,10 +99,10 @@ export const preprocessScheduleData = (
       schedule[reservationDate][reservationHour]
     ) {
       schedule[reservationDate][reservationHour] = {
-        status: 'reserved',
+        status: reservation.status === 'cancelled' ? 'cancelled' : 'reserved',
       };
     }
   });
-
+  console.log(schedule);
   return schedule; // Devuelve la estructura con disponibilidad, bloqueos y reservas
 };
