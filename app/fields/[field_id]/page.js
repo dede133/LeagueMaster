@@ -11,6 +11,7 @@ import { fetchUserData } from '@/lib/services/auth';
 import CustomCarousel from '../../../components/CustomCarousel';
 import ScheduleTable from '@/components/ScheduleTable/ScheduleTable';
 import ServiceCard from '@/components/ServiceCard';
+import Map from '@/components/Map';
 import {
   Card,
   CardContent,
@@ -155,7 +156,17 @@ const FieldDetails = memo(({ params }) => {
                   <CardTitle>Ubicación</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="mt-4">{field.address}</p>
+                  <p>{field.address}</p>
+
+                  {/* Aquí insertamos el componente Map solo si hay coordenadas */}
+                  {false && field.latitude && field.longitude && (
+                    <div className="mt-4">
+                      <Map
+                        latitude={field.latitude}
+                        longitude={field.longitude}
+                      />
+                    </div>
+                  )}
                 </CardContent>
               </Card>
             )}
