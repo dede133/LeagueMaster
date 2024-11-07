@@ -10,6 +10,7 @@ import { getReservationsByFieldAndDate } from '@/lib/services/reservation';
 import { fetchUserData } from '@/lib/services/auth';
 import CustomCarousel from '../../../components/CustomCarousel';
 import ScheduleTable from '@/components/ScheduleTable/ScheduleTable';
+import ServiceCard from '@/components/ServiceCard';
 import {
   Card,
   CardContent,
@@ -28,7 +29,6 @@ const FieldDetails = memo(({ params }) => {
   const [blockedDates, setBlockedDates] = useState([]);
   const [reservations, setReservations] = useState([]);
   const [user, setUser] = useState(null); // Estado para almacenar los datos del usuario
-
   // Obtener los detalles del campo y la disponibilidad
   useEffect(() => {
     const fetchFieldDetails = async () => {
@@ -115,92 +115,65 @@ const FieldDetails = memo(({ params }) => {
               </CardContent>
             </Card>
 
-            <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
-              <CardHeader>
-                <CardTitle>El club</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p>Forus Caja Mágica: la joya de la corona del pádel...</p>
-                <p className="mt-4">
-                  Las pistas de pádel y de tenis del club...
-                </p>
-                <p className="mt-4">
-                  Sede del Mutua Madrid Open, el torneo más importante...
-                </p>
-              </CardContent>
-            </Card>
+            {field.field_info && (
+              <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
+                <CardHeader>
+                  <CardTitle>Informacion</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p>{field.field_info}</p>
+                </CardContent>
+              </Card>
+            )}
 
-            <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
-              <CardContent>
-                <CustomCarousel
-                  items={field.photo_url} // Pasamos el array de fotos
-                  renderItem={(photoUrl) => (
-                    <div>
-                      <img
-                        src={`http://localhost:5000/${photoUrl}`} // Mostrar la imagen usando su URL
-                        alt={field.name}
-                        className="w-full h-64 object-cover"
-                      />
-                    </div>
-                  )}
-                />
-              </CardContent>
-            </Card>
+            {field.photo_url && field.photo_url.length > 0 && (
+              <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
+                <CardContent>
+                  <CustomCarousel
+                    items={field.photo_url} // Pasamos el array de fotos
+                    renderItem={(photoUrl) => (
+                      <div>
+                        <img
+                          src={`http://localhost:5000/${photoUrl}`} // Mostrar la imagen usando su URL
+                          alt={field.name}
+                          className="w-full h-64 object-cover"
+                        />
+                      </div>
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {/* Columna Derecha (Tarjetas más pequeñas alineadas a la derecha) */}
           <div className="space-y-4">
-            {/* Card 3: Oferta */}
-            <Card className="lg:max-h-xl shadow-md">
-              <CardHeader>
-                <CardTitle>Recarga Bono Monedero 100€</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>Regalo 15€</CardDescription>
-                <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded">
-                  Compra esta oferta
-                </button>
-              </CardContent>
-            </Card>
-
             {/* Card 4: Mapa */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Ubicación</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="mt-4">Camino de Perales, s/n, 28041</p>
-              </CardContent>
-            </Card>
+            {field.address && (
+              <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
+                <CardHeader>
+                  <CardTitle>Ubicación</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="mt-4">{field.address}</p>
+                </CardContent>
+              </Card>
+            )}
 
-            {/* Card 5: Servicios */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Servicios</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="flex space-x-4">
-                  <span className="bg-gray-100 py-1 px-2 rounded">
-                    Vestuarios
-                  </span>
-                  <span className="bg-gray-100 py-1 px-2 rounded">
-                    Accesible
-                  </span>
-                  <span className="bg-gray-100 py-1 px-2 rounded">
-                    Ludoteca infantil
-                  </span>
-                  <span className="bg-gray-100 py-1 px-2 rounded">Tienda</span>
-                  <span className="bg-gray-100 py-1 px-2 rounded">
-                    Taquillas
-                  </span>
-                </div>
-              </CardContent>
-            </Card>
+            <ServiceCard services={field.services} />
+
+            {field.field_type && (
+              <Card>
+                <CardHeader>
+                  <CardTitle>Detalles</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="mt-4">Tipo: {field.field_type}</p>
+                </CardContent>
+              </Card>
+            )}
           </div>
         </div>
-
-        <p className="mt-4">Tipo: {field.field_type}</p>
-        <p className="mt-4">{field.field_info}</p>
       </div>
     </>
   );
