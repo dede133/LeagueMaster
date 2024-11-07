@@ -1,89 +1,51 @@
 // src/components/Map.js
 'use client';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { GoogleMap, Marker, useLoadScript } from '@react-google-maps/api';
 
-// Estilos y configuración del contenedor del mapa
 const mapContainerStyle = {
   width: '100%',
   height: '400px',
 };
 
-// Opciones de configuración para el mapa
 const options = {
   disableDefaultUI: true,
   zoomControl: true,
 };
 
-// Coordenadas iniciales para centrar el mapa (opcional)
-const defaultCenter = {
-  lat: 40.4168, // Madrid, por ejemplo
-  lng: -3.7038,
-};
-
-const Map = () => {
+const Map = ({ latitude, longitude }) => {
   const { isLoaded, loadError } = useLoadScript({
-    googleMapsApiKey: process.env.NEXT_PUBLIC_API_MAPS, // Reemplaza 'TU_API_KEY' con tu clave de API de Google Maps
+    googleMapsApiKey: process.env.NEXT_PUBLIC_API_MAPS,
   });
 
-  const [markers, setMarkers] = useState([]);
-  const [currentLocation, setCurrentLocation] = useState(defaultCenter);
+  const [mapCenter, setMapCenter] = useState(null);
 
   useEffect(() => {
-    // Obtener la ubicación actual del usuario
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          setCurrentLocation({ lat: latitude, lng: longitude });
+    if (isLoaded && latitude && longitude) {
+      const lat = Number(latitude);
+      const lng = Number(longitude);
 
-          // Simula la obtención de campos cercanos de la API de tu backend
-          fetchFieldsNearby(latitude, longitude);
-        },
-        (error) => console.error('Error obteniendo ubicación:', error)
-      );
-    } else {
-      console.error('La geolocalización no es compatible con este navegador.');
+      if (!isNaN(lat) && !isNaN(lng)) {
+        setMapCenter({ lat, lng });
+      } else {
+        console.error('Latitud o longitud no son números válidos:', lat, lng);
+      }
     }
-  }, []);
-
-  const fetchFieldsNearby = (lat, lng) => {
-    // Simula una llamada a tu API para obtener campos de fútbol cercanos
-    // Aquí podrías llamar a tu backend con lat/lng y obtener una lista de campos cercanos
-    const mockFields = [
-      {
-        id: 1,
-        name: 'Campo 1',
-        location: { lat: lat + 0.01, lng: lng + 0.01 },
-      },
-      {
-        id: 2,
-        name: 'Campo 2',
-        location: { lat: lat - 0.01, lng: lng - 0.01 },
-      },
-      {
-        id: 3,
-        name: 'Campo 3',
-        location: { lat: lat + 0.02, lng: lng + 0.02 },
-      },
-    ];
-    setMarkers(mockFields);
-  };
+  }, [isLoaded, latitude, longitude]);
 
   if (loadError) return <p>Error cargando el mapa</p>;
   if (!isLoaded) return <p>Cargando...</p>;
+  if (!mapCenter) return null;
 
   return (
-    <div className="w-full md:w-2/3 lg:w-2/3 h-96 mx-auto mb-6">
+    <div className="w-full h-96">
       <GoogleMap
-        mapContainerClassName="w-full h-full"
+        mapContainerStyle={mapContainerStyle}
         zoom={14}
-        center={currentLocation}
+        center={mapCenter}
         options={options}
       >
-        {markers.map((field) => (
-          <Marker key={field.id} position={field.location} label={field.name} />
-        ))}
+        <Marker position={mapCenter} />
       </GoogleMap>
     </div>
   );
