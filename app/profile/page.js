@@ -1,6 +1,6 @@
 // src/pages/profile.js
 'use client';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { useRouter } from 'next/navigation';
 import UserProfile from '@/components/Profile/UserProfile';
@@ -11,11 +11,13 @@ const ProfilePage = () => {
   const [selectedTab, setSelectedTab] = useState('profile');
   const router = useRouter();
 
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/login'); // Redirige si el usuario no está autenticado
+    }
+  }, [loading, user, router]);
+
   if (loading) return <div>Loading...</div>;
-  if (!user) {
-    router.push('/login');
-    return null;
-  }
 
   const handleLogout = async () => {
     try {
