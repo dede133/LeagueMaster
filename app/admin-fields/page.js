@@ -1,16 +1,15 @@
 'use client';
 import { useState, useEffect, use } from 'react';
-import { X } from 'lucide-react';
 import { getUserFields } from '@/lib/services/field';
 import {
   getFieldAvailability,
   getBlockedDates,
   removeBlockedDates,
   addBlockedDates,
+  saveWeeklyAvailability,
+  deleteWeeklyAvailability,
 } from '@/lib/services/availability';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardTitle } from '@/components/ui/card';
-import { Switch } from '@/components/ui/switch';
 import {
   Select,
   SelectTrigger,
@@ -18,15 +17,9 @@ import {
   SelectItem,
   SelectValue,
 } from '@/components/ui/select';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogFooter,
-} from '@/components/ui/dialog';
-import BlockedDatesManager from '../../components/BlockedDatesManager';
+
+import BlockedDatesManager from '../../components/AdminFields/BlockedDatesManager';
+import AvailabilityDatesManager from '@/components/AdminFields/AvailabilityDatesManager';
 
 const daysOfWeek = [
   'Lunes',
@@ -52,6 +45,9 @@ const AdminFieldManagement = () => {
   );
   const [disabledDays, setDisabledDays] = useState([]);
   const [showModal, setShowModal] = useState(false);
+
+  const [availabilityToAdd, setAvailabilityToAdd] = useState({});
+  const [availabilityToDelete, setAvailabilityToDelete] = useState({});
 
   useEffect(() => {
     const fetchFields = async () => {
@@ -81,14 +77,15 @@ const AdminFieldManagement = () => {
           from,
           to,
         }));
-        console.log('AA', simplifiedBlockedDates);
         const availabilityByDay = weeklyAvailability.reduce(
           (acc, availability) => {
-            // Simplemente recortamos los últimos 3 caracteres de start_time y end_time
+            // Simplificar los tiempos eliminando segundos
             const cleanStartTime = availability.start_time.slice(0, -3);
             const cleanEndTime = availability.end_time.slice(0, -3);
 
+            // Asignar solo los datos esenciales, incluyendo `day_of_week`
             acc[availability.day_of_week] = {
+              day_of_week: availability.day_of_week,
               start_time: cleanStartTime,
               end_time: cleanEndTime,
             };
@@ -97,7 +94,8 @@ const AdminFieldManagement = () => {
           },
           {}
         );
-        setAvailability(weeklyAvailability);
+        console.log(weeklyAvailability, availabilityByDay);
+        setAvailability(availabilityByDay);
         setAvailabilityList(availabilityByDay);
         setBlockedDatesList(simplifiedBlockedDates);
         setUpdatedBlockedDatesList(simplifiedBlockedDates);
@@ -123,22 +121,6 @@ const AdminFieldManagement = () => {
     }
   };
 
-  const handleBlockedDateList = (selectedRange) => {
-    if (selectedRange) {
-      // Añadir el nuevo rango a la lista existente de fechas bloqueadas
-      setBlockedDatesList((prev) => [...prev, selectedRange]);
-
-      // Mostrar en consola para verificar que se ha añadido correctamente
-    }
-
-    // Cerrar el modal después de guardar las fechas
-    setShowModal(false);
-  };
-
-  useEffect(() => {
-    console.log('Lista actualizada de fechas bloqueadas:', blockedDatesList);
-  }, [blockedDatesList]);
-
   const handleConfirmChanges = async () => {
     try {
       await saveWeeklyAvailabilityData();
@@ -150,31 +132,53 @@ const AdminFieldManagement = () => {
 
   // Encapsulamos la lógica de guardar disponibilidad semanal en una función asíncrona separada
   const saveWeeklyAvailabilityData = async () => {
-    const availabilityData = Object.keys(availability).reduce((acc, day) => {
-      const startTime = availability[day]?.startTime;
-      const endTime = availability[day]?.endTime;
+    const availabilityToAdd = [];
+    const availabilityToDelete = [];
 
-      if (startTime && endTime && isCardActive[day]) {
-        acc.push({
+    // Usamos `availabilityList` en lugar de `newAvailability`
+    Object.values(availabilityList).forEach((dayInfo) => {
+      const { day_of_week, start_time, end_time, isActive } = dayInfo;
+
+      if (isActive && start_time && end_time) {
+        // Añadir a `availabilityToAdd` si está activo y tiene `start_time` y `end_time`
+        availabilityToAdd.push({
           field_id: selectedField.field_id,
-          day_of_week: daysOfWeek.indexOf(day) + 1,
-          start_time: startTime,
-          end_time: endTime,
-          price: 60,
-          available_durations: [60],
+          day_of_week,
+          start_time,
+          end_time,
+          price: 60, // Precio constante
+          available_durations: [60], // Duración fija
+        });
+      } else {
+        // Añadir a `availabilityToDelete` si está inactivo o le faltan tiempos
+        availabilityToDelete.push({
+          day_of_week,
         });
       }
-      return acc;
-    }, []);
+    });
 
-    if (availabilityData.length > 0) {
+    // Mostrar en consola los datos procesados
+    console.log('Días para añadir:', availabilityToAdd);
+    console.log('Días para borrar:', availabilityToDelete);
+
+    // Guardar disponibilidad si hay datos en `availabilityToAdd`
+    if (availabilityToAdd.length > 0) {
       try {
-        await saveWeeklyAvailability(availabilityData);
+        await saveWeeklyAvailability(availabilityToAdd);
         console.log('Disponibilidad guardada exitosamente.');
       } catch (error) {
         console.error('Error al guardar la disponibilidad semanal:', error);
         throw error;
       }
+    }
+
+    // Aquí puedes manejar `availabilityToDelete` para pasarlo a la API de eliminación
+    if (availabilityToDelete.length > 0) {
+      console.log('Disponibilidad para eliminar:', availabilityToDelete);
+      await deleteWeeklyAvailability(
+        selectedField.field_id,
+        availabilityToDelete
+      ); // Llamada a la función para eliminar
     }
   };
 
@@ -211,6 +215,12 @@ const AdminFieldManagement = () => {
     setDatesToAdd(datesToAdd);
     setDatesToRemove(datesToRemove);
   };
+  const handleSaveChanges = ({ newAvailability }) => {
+    console.log('onupdate', newAvailability);
+
+    // Actualizamos `availabilityList` con los datos de `newAvailability`
+    setAvailabilityList(newAvailability);
+  };
 
   return (
     <div className="flex flex-col m-6 mx-auto w-3/4">
@@ -238,106 +248,25 @@ const AdminFieldManagement = () => {
         </Select>
       </div>
 
-      <div className="grid grid-cols-2 gap-10">
-        {/* Sección Horarios a la izquierda */}
+      {/* Layout responsive */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
         <div>
           <h2 className="text-lg font-bold mb-2 text-center">
             Horas de abertura
           </h2>
-          {daysOfWeek.map((day, index) => (
-            <Card
-              key={day}
-              className={`w-full h-auto text-white shadow-md rounded-md transition-opacity duration-300 mb-4 ${isCardActive[day] ? 'opacity-100' : 'opacity-50'}`}
-            >
-              <CardContent className="flex justify-between items-center">
-                <div className="flex flex-col items-start space-y-2">
-                  <CardTitle className="text-black text-lg">{day}</CardTitle>
-                  <Switch
-                    checked={isCardActive[day]}
-                    onCheckedChange={() => handleSwitchChange(day)}
-                    className="scale-75"
-                  />
-                </div>
-
-                <div
-                  className={`grid grid-cols-2 gap-2 ${isCardActive[day] ? '' : 'pointer-events-none'}`}
-                >
-                  <div>
-                    <h1 className="text-sm text-gray-500">Desde</h1>
-                    <Select
-                      onValueChange={(value) =>
-                        setAvailability((prev) => ({
-                          ...prev,
-                          [day]: { ...prev[day], startTime: value },
-                        }))
-                      }
-                      value={availability[day]?.startTime || ''}
-                    >
-                      <SelectTrigger className="w-full text-black bg-white">
-                        <SelectValue
-                          placeholder={
-                            availabilityList[index + 1]?.start_time ||
-                            'Abertura'
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: 24 }, (_, i) => (
-                          <SelectItem
-                            key={i}
-                            value={`${i.toString().padStart(2, '0')}:00`}
-                          >
-                            {`${i.toString().padStart(2, '0')}:00`}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                  <div>
-                    <h1 className="text-sm text-gray-500">Hasta</h1>
-                    <Select
-                      onValueChange={(value) =>
-                        setAvailability((prev) => ({
-                          ...prev,
-                          [day]: { ...prev[day], endTime: value },
-                        }))
-                      }
-                      value={availability[day]?.endTime || ''}
-                    >
-                      <SelectTrigger className="w-full text-black bg-white">
-                        <SelectValue
-                          placeholder={
-                            availabilityList[index + 1]?.end_time || 'Cierre'
-                          }
-                        />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {Array.from({ length: 24 }, (_, i) => (
-                          <SelectItem
-                            key={i}
-                            value={`${i.toString().padStart(2, '0')}:00`}
-                          >
-                            {`${i.toString().padStart(2, '0')}:00`}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+          <AvailabilityDatesManager
+            daysOfWeek={daysOfWeek}
+            availability={availability}
+            onUpdate={handleSaveChanges}
+          />
         </div>
 
-        {/* Sección Fechas Bloqueadas a la derecha */}
-        <div>
+        <div className="mt-8 md:mt-0">
           <BlockedDatesManager
             fieldId={selectedField?.field_id}
             initialBlockedDates={blockedDatesList}
             onUpdate={handleUpdateBlockedDates}
           />
-
           <Button
             onClick={handleConfirmChanges}
             className="mt-8 w-full bg-blue-600 text-white"
