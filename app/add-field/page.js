@@ -1,12 +1,17 @@
 // src/pages/add-field.js
 'use client';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { addField } from '@/lib/services/field';
+import { useRouter } from 'next/navigation';
+import { useAuth } from '../../context/AuthContext';
 
 const AddField = () => {
+  const { userRole, isAuthenticated } = useAuth();
+  const router = useRouter();
+
   const [name, setName] = useState('');
   const [latitude, setLatitude] = useState('');
   const [longitude, setLongitude] = useState('');
@@ -16,6 +21,17 @@ const AddField = () => {
   const [features, setFeatures] = useState('');
   const [availability, setAvailability] = useState('');
   const [photos, setPhotos] = useState([]); // Estado para manejar las fotos
+
+  useEffect(() => {
+    // Solo redirige si el usuario está autenticado pero no tiene el rol adecuado
+    if (isAuthenticated && userRole !== 'admin') {
+      router.replace('/new-field');
+    }
+  }, [isAuthenticated, userRole, router]);
+  // Evita renderizar contenido hasta que el rol esté definido
+  if (isAuthenticated && userRole !== 'admin') {
+    return null;
+  }
 
   const handleAddField = async (e) => {
     e.preventDefault();
