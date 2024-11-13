@@ -55,7 +55,10 @@ const Header = () => {
           </Link>
         </nav>
 
-        <Link href="/add-field" className="mr-5 hover:text-gray-900">
+        <Link
+          href={userRole === 'admin' ? '/add-field' : '/new-field'}
+          className="mr-5 hover:text-gray-900"
+        >
           ¿Tienes un campo?
         </Link>
         {userRole === 'admin' && (
