@@ -14,9 +14,8 @@ const ScheduleTable = ({
   field_id,
 }) => {
   const [schedule, setSchedule] = useState({});
-  const [selectedDate, setSelectedDate] = useState(new Date()); // Estado para la fecha seleccionada
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Calcular las tres semanas disponibles basadas en la semana actual (solo se hace una vez)
   const firstDayOfCurrentWeek = startOfWeek(new Date(), { weekStartsOn: 1 });
   const secondWeek = startOfWeek(addWeeks(firstDayOfCurrentWeek, 1), {
     weekStartsOn: 1,
@@ -31,7 +30,7 @@ const ScheduleTable = ({
       availability,
       blockedDates,
       reservations,
-      availableWeeks // Pasar las semanas disponibles como argumento
+      availableWeeks
     );
     setSchedule(processedSchedule);
   }, [availability, blockedDates, reservations]);
@@ -39,11 +38,11 @@ const ScheduleTable = ({
   const hours = getHoursRange(availability);
 
   return (
-    <div className="relative inline-block max-h-96 overflow-auto scrollable-container">
+    <div className="relative max-h-96 overflow-auto scroll-custom">
       <DateSelector
         selectedDate={selectedDate}
         setSelectedDate={setSelectedDate}
-        availableWeeks={availableWeeks} // Pasar las semanas calculadas solo una vez
+        availableWeeks={availableWeeks}
       />
       <table className="min-w-max table-fixed border-collapse border-spacing-0">
         <TableHeader selectedDate={selectedDate} />
