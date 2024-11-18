@@ -29,17 +29,14 @@ const ReservationButton = ({
   const formattedHour = format(hour, 'HH:mm');
 
   const handleContinue = async () => {
-    // Verificar si el usuario está logueado
     if (!user) {
       setErrorMessage('No autorizado. Inicia sesión para continuar.');
       return;
     }
 
-    // Crear un nuevo objeto Date para la hora de finalización y sumar 1 hora
     const endTime = new Date(hour);
     endTime.setHours(endTime.getHours() + 1);
 
-    // Definir los datos de la reserva con el formato correcto para el tiempo de inicio y fin
     const reservationData = {
       field_id: field_id,
       reservation_date: day,
@@ -53,7 +50,6 @@ const ReservationButton = ({
       setErrorMessage('');
       alert('Reserva realizada con éxito');
 
-      // Actualizar el estado global schedule
       setSchedule((prevSchedule) => {
         const updatedSchedule = { ...prevSchedule };
         const hourKey = format(hour, 'HH');
@@ -76,7 +72,7 @@ const ReservationButton = ({
       className={`inline-block align-top h-full w-full ${buttonColor}`}
       disabled={status !== 'available' && status !== 'cancelled'}
     >
-      {(status === 'available' || status === 'cancelled') && ( // Permitir que los estados 'available' y 'cancelled' abran el menú
+      {(status === 'available' || status === 'cancelled') && (
         <DropdownMenu open={openDropdown} onOpenChange={setOpenDropdown}>
           <DropdownMenuTrigger asChild>
             <div

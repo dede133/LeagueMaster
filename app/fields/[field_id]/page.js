@@ -29,8 +29,8 @@ const FieldDetails = memo(({ params }) => {
   const [availability, setAvailability] = useState(null);
   const [blockedDates, setBlockedDates] = useState([]);
   const [reservations, setReservations] = useState([]);
-  const [user, setUser] = useState(null); // Estado para almacenar los datos del usuario
-  // Obtener los detalles del campo y la disponibilidad
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
     const fetchFieldDetails = async () => {
       if (!field_id) return;
@@ -99,13 +99,12 @@ const FieldDetails = memo(({ params }) => {
 
       <div className="container mx-auto p-8">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-2">
-          {/* Columna Principal (2 tarjetas principales en el centro) */}
           <div className="lg:col-span-3 space-y-4">
             <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
               <CardHeader>
                 <CardTitle>Horario de Pistas</CardTitle>
               </CardHeader>
-              <CardContent className=" flex justify-center">
+              <CardContent className=" flex justify-center ">
                 <ScheduleTable
                   availability={availability}
                   blockedDates={blockedDates}
@@ -147,9 +146,7 @@ const FieldDetails = memo(({ params }) => {
             )}
           </div>
 
-          {/* Columna Derecha (Tarjetas más pequeñas alineadas a la derecha) */}
           <div className="space-y-4">
-            {/* Card 4: Mapa */}
             {field.address && (
               <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
                 <CardHeader>
@@ -158,7 +155,6 @@ const FieldDetails = memo(({ params }) => {
                 <CardContent>
                   <p>{field.address}</p>
 
-                  {/* Aquí insertamos el componente Map solo si hay coordenadas */}
                   {false && field.latitude && field.longitude && (
                     <div className="mt-4">
                       <Map

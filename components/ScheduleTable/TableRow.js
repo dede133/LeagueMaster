@@ -11,23 +11,20 @@ const TableRow = ({
   field_id,
   selectedDate,
 }) => {
-  //console.log('Hours', hour, hourIndex);
   const formattedHour = format(hour, 'HH:mm');
-  // Calcular el inicio de la semana en base a la fecha seleccionada
   const startOfWeekDate = startOfWeek(selectedDate, { weekStartsOn: 1 });
   const daysOfWeek = Array.from({ length: 7 }, (_, i) =>
     addDays(startOfWeekDate, i)
-  ); // Lista de días en la semana seleccionada
+  );
 
   return (
     <tr className="hover:bg-gray-50 border-none">
-      <td className="bg-gray-100 text-center text-sm border-b border-r border-t">
+      <td className="sticky z-10 left-0 bg-gray-100 text-center text-sm border-b border-r border-t">
         {formattedHour}
       </td>
       {daysOfWeek.map((day, dayIndex) => {
-        //console.log('Days', dayIndex);
         const formattedDate = format(day, 'yyyy-MM-dd');
-        const daySchedule = schedule[formattedDate]; // Obtener el horario del día formateado
+        const daySchedule = schedule[formattedDate];
         const hourStatus = daySchedule?.[hour.getHours()]?.status || 'blocked';
         return (
           <td key={dayIndex} className="border-r p-0 h-12">
