@@ -104,7 +104,7 @@ const FieldDetails = memo(({ params }) => {
               <CardHeader>
                 <CardTitle>Horario de Pistas</CardTitle>
               </CardHeader>
-              <CardContent className=" flex justify-center ">
+              <CardContent className="flex justify-center">
                 <ScheduleTable
                   availability={availability}
                   blockedDates={blockedDates}
@@ -129,18 +129,17 @@ const FieldDetails = memo(({ params }) => {
             {field.photo_url && field.photo_url.length > 0 && (
               <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
                 <CardContent>
-                  <CustomCarousel
-                    items={field.photo_url} // Pasamos el array de fotos
-                    renderItem={(photoUrl) => (
-                      <div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {field.photo_url.map((photoUrl, index) => (
+                      <div key={index} className="overflow-hidden rounded-lg">
                         <img
-                          src={`http://localhost:5000/${photoUrl}`} // Mostrar la imagen usando su URL
-                          alt={field.name}
-                          className="w-full h-64 object-cover"
+                          src={`http://localhost:5000/${photoUrl}`}
+                          alt={`Image ${index + 1}`}
+                          className="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
                         />
                       </div>
-                    )}
-                  />
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -179,6 +178,30 @@ const FieldDetails = memo(({ params }) => {
                 </CardContent>
               </Card>
             )}
+
+            {/* Nueva Card Promocional */}
+            <div className="lg:col-span-1">
+              {/* Nueva Card Promocional */}
+              <Card className="bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg h-full flex flex-col justify-between">
+                <CardHeader>
+                  <CardTitle className="text-xl font-bold">
+                    Ahorra con nuestro Plan Mensual
+                  </CardTitle>
+                  <CardDescription className="mt-2 text-white">
+                    Accede al plan mensual para ahorrar dinero con tus reservas
+                    de campos. Obtén más información aquí.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className=" flex justify-end items-end p-2">
+                  <a
+                    href="/pricing"
+                    className="bg-white text-blue-500 hover:text-blue-600 px-3 py-1.5 rounded-lg text-sm shadow-lg"
+                  >
+                    Más Información
+                  </a>
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </div>
       </div>

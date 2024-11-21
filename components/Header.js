@@ -1,8 +1,8 @@
-// components/Header.js
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import { Menu, X } from 'lucide-react';
 import { PersonIcon } from '@radix-ui/react-icons';
 import { useAuth } from '../context/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 const Header = () => {
   const { isAuthenticated, userRole, loading } = useAuth();
   const router = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const handleProfileClick = () => {
     if (!loading) {
@@ -21,13 +22,15 @@ const Header = () => {
     }
   };
 
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
   return (
-    <header className="text-gray-600 body-font">
-      <div className="container mx-auto flex flex-wrap p-5 flex-col md:flex-row items-center">
-        <Link
-          href="/"
-          className="flex title-font font-medium items-center text-gray-900 mb-4 md:mb-0"
-        >
+    <header className="bg-white shadow-md sticky top-0 z-50">
+      <div className="container mx-auto px-6 lg:px-8 py-5 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center space-x-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
@@ -35,47 +38,129 @@ const Header = () => {
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth="2"
-            className="w-10 h-10 text-white p-2 bg-indigo-500 rounded-full"
+            className="w-10 h-10 bg-blue-500 text-white rounded-full p-2"
             viewBox="0 0 24 24"
           >
             <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
           </svg>
-          <span className="ml-3 text-xl hover:text-blue-700">LeagueMaster</span>
+          <span className="text-xl font-bold text-gray-800">LeagueMaster</span>
         </Link>
 
-        <nav className="md:ml-auto md:mr-auto flex flex-wrap items-center text-base justify-center">
-          <Link href="/" className="mr-5 hover:text-gray-900">
+        {/* Botón Hamburguesa */}
+        <button
+          className="md:hidden text-gray-600 hover:text-blue-500 focus:outline-none"
+          onClick={() => setMenuOpen(!menuOpen)}
+        >
+          {menuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
+        </button>
+
+        {/* Navegación Desktop */}
+        <nav className="hidden md:flex space-x-8 text-base font-medium ">
+          <Link href="/" className="text-gray-600 hover:text-blue-500">
             Inicio
           </Link>
-          <Link href="/fields" className="mr-5 hover:text-gray-900">
+          <Link href="/fields" className="text-gray-600 hover:text-blue-500">
             Campos
           </Link>
-          <Link href="/leagues" className="mr-5 hover:text-gray-900">
+          <Link href="/leagues" className="text-gray-600 hover:text-blue-500">
             Ligas
           </Link>
         </nav>
 
-        <Link
-          href={userRole === 'admin' ? '/add-field' : '/new-field'}
-          className="mr-5 hover:text-gray-900"
-        >
-          ¿Tienes un campo?
-        </Link>
-        {userRole === 'admin' && (
-          <Link href="/admin-fields" className="mr-5 hover:text-gray-900">
-            Tus campos
+        {/* Opciones */}
+        <div className="hidden md:flex items-center space-x-4">
+          {userRole === 'admin' && (
+            <Link
+              href="/admin-fields"
+              className="text-base text-gray-600 hover:text-blue-500"
+            >
+              Tus Campos
+            </Link>
+          )}
+          <Link
+            href={userRole === 'admin' ? '/add-field' : '/new-field'}
+            className="text-base text-gray-600 hover:text-blue-500"
+          >
+            ¿Tienes un campo?
           </Link>
-        )}
-
-        <button
-          onClick={handleProfileClick}
-          disabled={loading}
-          className="inline-flex items-center bg-blue-500 border-0 py-1 px-3 focus:outline-none hover:bg-blue-700 rounded text-white mt-4 md:mt-0"
-        >
-          <PersonIcon />
-          {loading ? 'Cargando...' : 'Perfil'}
-        </button>
+          <button
+            onClick={handleProfileClick}
+            disabled={loading}
+            className="flex items-center space-x-2 bg-blue-500 text-white hover:bg-blue-600 px-5 py-2 rounded-lg transition-all duration-200 text-base font-semibold"
+          >
+            <PersonIcon />
+            <span>Perfil</span>
+          </button>
+        </div>
       </div>
+
+      {/* Menú Móvil */}
+      {menuOpen && (
+        <nav className="md:hidden bg-white shadow-md">
+          <ul className="space-y-4 px-6 py-4 text-gray-600 text-base font-medium">
+            <li>
+              <Link
+                href="/"
+                className="block hover:text-blue-500"
+                onClick={closeMenu}
+              >
+                Inicio
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/fields"
+                className="block hover:text-blue-500"
+                onClick={closeMenu}
+              >
+                Campos
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/leagues"
+                className="block hover:text-blue-500"
+                onClick={closeMenu}
+              >
+                Ligas
+              </Link>
+            </li>
+            {userRole === 'admin' && (
+              <li>
+                <Link
+                  href="/admin-fields"
+                  className="block hover:text-blue-500"
+                  onClick={closeMenu}
+                >
+                  Tus Campos
+                </Link>
+              </li>
+            )}
+            <li>
+              <Link
+                href={userRole === 'admin' ? '/add-field' : '/new-field'}
+                className="block hover:text-blue-500"
+                onClick={closeMenu}
+              >
+                ¿Tienes un campo?
+              </Link>
+            </li>
+            <li>
+              <button
+                onClick={() => {
+                  handleProfileClick();
+                  closeMenu();
+                }}
+                disabled={loading}
+                className="flex items-center space-x-2 bg-blue-500 text-white hover:bg-blue-600 px-5 py-2 rounded-lg w-full font-semibold"
+              >
+                <PersonIcon />
+                <span>{loading ? 'Cargando...' : 'Perfil'}</span>
+              </button>
+            </li>
+          </ul>
+        </nav>
+      )}
     </header>
   );
 };

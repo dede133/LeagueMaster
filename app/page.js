@@ -1,6 +1,8 @@
-'use client'; // Indica que esta página es un componente cliente
+'use client';
+import { useState, useEffect } from 'react';
 import { fetchFields } from '@/lib/services/field';
-import React, { useState, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import FeatureSection from '../components/FeatureSection';
 import Link from 'next/link';
 import CustomCarousel from '../components/CustomCarousel';
@@ -9,7 +11,7 @@ export default function Home() {
   const [fields, setFields] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  console.log('home render');
+
   useEffect(() => {
     const loadFields = async () => {
       try {
@@ -24,67 +26,59 @@ export default function Home() {
 
     loadFields();
   }, []);
+
   return (
-    <div className="flex flex-col min-h-screen">
-      <main className="flex-grow p-4 md:p-6">
-        <h1 className="text-2xl md:text-4xl font-bold text-center mb-4 md:mb-6">
+    <div className="flex flex-col items-center min-h-screen">
+      {/* Hero Section */}
+      <section className="w-full text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white py-16 px-4 rounded-md shadow-lg">
+        <h1 className="text-4xl font-extrabold mb-4">
           Bienvenido a LeagueMaster
         </h1>
-        <p className="text-center text-base md:text-lg text-gray-700 mb-6 md:mb-6">
-          La mejor plataforma para gestionar reservas de campos y ligas de
-          fútbol.
+        <p className="text-lg md:text-xl mb-6">
+          Gestiona tus reservas y organiza tus ligas de fútbol de manera
+          sencilla y rápida.
         </p>
+        <Link href="/register">
+          <Button className="bg-white text-blue-500 hover:bg-gray-200 px-6 py-3">
+            Regístrate Ahora
+          </Button>
+        </Link>
+      </section>
 
-        {/* Sección de características */}
+      {/* Sección de Características */}
+      <section className="w-full px-4 sm:px-6 lg:px-8 mb-12">
         <FeatureSection />
+      </section>
 
-        {/* Carrusel de campos */}
-        <div className="mt-8">
-          <h2 className="text-xl font-bold text-center mb-4">
-            Campos Disponibles
-          </h2>
-          {loading ? (
-            <p className="text-center">Cargando campos...</p>
-          ) : error ? (
-            <p className="text-center text-red-500">{error}</p>
-          ) : fields.length === 0 ? (
-            <p className="text-center text-gray-700">
-              No hay campos disponibles
-            </p>
-          ) : (
-            <CustomCarousel
-              items={fields}
-              renderItem={(field) => (
-                <div className="mb-4">
-                  <img
-                    src={`http://localhost:5000/${field.photo_url[0]}`}
-                    alt={field.name}
-                    className="w-full h-64 object-cover rounded-lg"
-                  />
-                  <h3 className="text-lg font-bold mt-2">{field.name}</h3>
-                  <p className="text-sm text-gray-600">{field.address}</p>
-                  <Link
-                    href={`/fields/${field.field_id}`}
-                    className="text-blue-500"
-                  >
-                    Ver detalles
-                  </Link>
-                </div>
-              )}
-            />
-          )}
-        </div>
+      {/* Carrusel de Campos */}
+      <section className="w-full max-w-5xl px-4 mb-12">
+        <h2 className="text-2xl font-bold text-center mb-6">
+          Muchos campos disponibles
+        </h2>
+        {loading ? (
+          <p className="text-center text-gray-500">Cargando campos...</p>
+        ) : error ? (
+          <p className="text-center text-red-500">{error}</p>
+        ) : fields.length === 0 ? (
+          <p className="text-center text-gray-500">No hay campos disponibles</p>
+        ) : (
+          <CustomCarousel items={fields} />
+        )}
+      </section>
 
-        {/* Botón de registro */}
-        <div className="text-center mt-8">
-          <Link
-            href="/register"
-            className="bg-blue-500 text-white py-2 px-6 rounded hover:bg-blue-700"
-          >
-            Regístrate aquí
-          </Link>
-        </div>
-      </main>
+      {/* Call-to-Action Final */}
+      <section className="w-full text-center bg-gray-100 py-8 px-4 rounded-md shadow-lg">
+        <h3 className="text-xl font-bold mb-4">¿Listo para comenzar?</h3>
+        <p className="text-gray-700 mb-6">
+          Regístrate y descubre la mejor forma de gestionar tus partidos y
+          reservas.
+        </p>
+        <Link href="/register">
+          <Button className="bg-blue-500 text-white hover:bg-blue-600 px-6 py-3">
+            ¡Únete Hoy!
+          </Button>
+        </Link>
+      </section>
     </div>
   );
 }
