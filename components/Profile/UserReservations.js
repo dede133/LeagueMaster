@@ -1,3 +1,4 @@
+'use client';
 // src/components/Profile/UserReservations.js
 import React, { useState, useEffect } from 'react';
 import {
