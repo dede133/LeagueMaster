@@ -1,3 +1,4 @@
+// app/page.js
 'use client';
 import { useState, useEffect } from 'react';
 import { fetchFields } from '@/lib/services/field';

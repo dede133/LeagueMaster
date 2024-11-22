@@ -1,3 +1,4 @@
+// app/fields/[field_id]/pages.js
 'use client';
 import React, { memo } from 'react';
 import { useState, useEffect } from 'react';
