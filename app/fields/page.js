@@ -1,6 +1,6 @@
 // app/fields/pages.js
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { fetchFields } from '@/lib/services/field';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -32,6 +32,7 @@ export default function FieldsPage() {
   const [selectedDate, setSelectedDate] = useState(null); // Fecha seleccionada
   const [fieldType, setFieldType] = useState(''); // Para el tipo de suelo
   const [fieldSize, setFieldSize] = useState(''); // Para el tamaño del campo
+  const calendarRef = useRef(null);
 
   useEffect(() => {
     const loadFields = async () => {
@@ -56,7 +57,18 @@ export default function FieldsPage() {
       fields.filter((field) => field.name.toLowerCase().includes(value))
     );
   };
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (calendarRef.current && !calendarRef.current.contains(event.target)) {
+        setShowCalendar(false);
+      }
+    };
 
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-50">
       {/* Hero Section */}
@@ -80,8 +92,7 @@ export default function FieldsPage() {
             />
           </div>
 
-          {/* Selector de fecha */}
-          <div className="relative">
+          <div className="relative" ref={calendarRef}>
             <Button
               className="bg-white rounded-full px-4 py-2 text-sm text-gray-700 shadow-sm flex items-center justify-between w-44 border border-gray-300 focus:outline-none focus:ring-4 focus:ring-blue-300 transition duration-300"
               onClick={() => setShowCalendar(!showCalendar)}

@@ -32,7 +32,6 @@ const AddField = () => {
   if (isAuthenticated && userRole !== 'admin') {
     return null;
   }
-
   const handleAddField = async (e) => {
     e.preventDefault();
 
