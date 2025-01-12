@@ -99,20 +99,22 @@ const FieldDetails = memo(({ params }) => {
       </div>
 
       <div className="container mx-auto p-8">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-2">
-          <div className="lg:col-span-3 space-y-4">
-            <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-4 gap-4 auto-rows-min">
+          <div className="lg:col-span-3 space-y-6">
+            <Card className="w-full shadow-md">
               <CardHeader>
                 <CardTitle>Horario de Pistas</CardTitle>
               </CardHeader>
               <CardContent className="flex justify-center">
-                <ScheduleTable
-                  availability={availability}
-                  blockedDates={blockedDates}
-                  reservations={reservations}
-                  user={user}
-                  field_id={field_id}
-                />
+                <div className="w-full">
+                  <ScheduleTable
+                    availability={availability}
+                    blockedDates={blockedDates}
+                    reservations={reservations}
+                    user={user}
+                    field_id={field_id}
+                  />
+                </div>
               </CardContent>
             </Card>
 

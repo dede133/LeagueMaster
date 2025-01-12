@@ -2,15 +2,18 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, ChevronDown } from 'lucide-react';
 import { PersonIcon } from '@radix-ui/react-icons';
 import { useAuth } from '../context/AuthContext';
+import { useLeagues } from '../context/LeagueContext';
 import { useRouter } from 'next/navigation';
 
 const Header = () => {
   const { isAuthenticated, userRole, loading } = useAuth();
+  const { leagues, loading: leaguesLoading } = useLeagues();
   const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const handleProfileClick = () => {
     if (!loading) {
@@ -20,6 +23,10 @@ const Header = () => {
         router.push('/login');
       }
     }
+  };
+
+  const toggleDropdown = () => {
+    setDropdownOpen((prev) => !prev);
   };
 
   const closeMenu = () => {
@@ -55,7 +62,7 @@ const Header = () => {
         </button>
 
         {/* Navegación Desktop */}
-        <nav className="hidden md:flex space-x-8 text-base font-medium ">
+        <nav className="hidden md:flex space-x-8 text-base font-medium">
           <Link href="/" className="text-gray-600 hover:text-blue-500">
             Inicio
           </Link>
@@ -67,8 +74,40 @@ const Header = () => {
           </Link>
         </nav>
 
-        {/* Opciones */}
         <div className="hidden md:flex items-center space-x-4">
+          {isAuthenticated && leagues.length > 0 && (
+            <div className="relative">
+              <button
+                className="flex items-center text-base text-gray-600 hover:text-blue-500 focus:outline-none"
+                onClick={toggleDropdown} // Abre/cierra el dropdown manualmente
+              >
+                Mis Ligas
+                {/* Icono de flecha de Lucide */}
+                <ChevronDown
+                  className={`w-4 h-4 ml-2 transition-transform ${
+                    dropdownOpen ? 'rotate-180' : 'rotate-0'
+                  }`}
+                />
+              </button>
+              {dropdownOpen && (
+                <ul className="absolute bg-white border rounded shadow-md mt-2 w-48">
+                  {leagues.map((league) => (
+                    <li key={league.league_id} className="hover:bg-gray-100">
+                      <Link
+                        href={`/my-leagues/${league.league_id}`}
+                        className="block px-4 py-2 text-sm text-gray-700"
+                        onClick={() => setDropdownOpen(false)} // Cierra el dropdown al hacer clic
+                      >
+                        {league.league_name}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+
+          {/* Opciones */}
           {userRole === 'admin' && (
             <Link
               href="/admin-fields"
@@ -77,6 +116,7 @@ const Header = () => {
               Tus Campos
             </Link>
           )}
+
           <Link
             href={userRole === 'admin' ? '/add-field' : '/new-field'}
             className="text-base text-gray-600 hover:text-blue-500"

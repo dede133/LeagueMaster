@@ -1,8 +1,8 @@
-// app/leagues/pages.js
 'use client';
 import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { getAllLeagues } from '@/lib/services/league'; // Importa la función correcta
 
 export default function LeaguesPage() {
   const [leagues, setLeagues] = useState([]);
@@ -12,30 +12,11 @@ export default function LeaguesPage() {
   useEffect(() => {
     const fetchLeagues = async () => {
       try {
-        // Simular datos por ahora
-        const leaguesData = [
-          {
-            id: 1,
-            name: 'Liga Premier',
-            description: 'La liga más competitiva',
-            logo: '/images/premier-logo.png',
-          },
-          {
-            id: 2,
-            name: 'Liga Regional',
-            description: 'Competición local intensa',
-            logo: '/images/regional-logo.png',
-          },
-          {
-            id: 3,
-            name: 'Liga Universitaria',
-            description: 'Para jóvenes talentos',
-            logo: '/images/university-logo.png',
-          },
-        ];
+        const leaguesData = await getAllLeagues();
         setLeagues(leaguesData);
       } catch (error) {
         setError('Error al cargar las ligas.');
+        console.error('Error:', error.message);
       } finally {
         setLoading(false);
       }
@@ -66,18 +47,23 @@ export default function LeaguesPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {leagues.map((league) => (
               <div
-                key={league.id}
+                key={league.league_id} // Usa league_id como clave única
                 className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
               >
+                {/* Imagen del campo */}
                 <img
-                  src={league.logo}
-                  alt={league.name}
-                  className="w-full h-32 object-contain rounded-lg mb-4"
+                  src={`http://localhost:5000/${league.photo_url}`}
+                  alt={`Campo de ${league.name}`}
+                  className="w-full h-40 object-cover rounded-lg mb-4"
                 />
+                {/* Nombre y dirección */}
                 <h3 className="text-lg font-bold">{league.name}</h3>
-                <p className="text-gray-600">{league.description}</p>
+                <p className="text-gray-600">
+                  {league.address || 'Sin dirección disponible'}
+                </p>
+                {/* Botón de detalles */}
                 <Link
-                  href={`/leagues/${league.id}`}
+                  href={`/leagues/${league.league_id}`}
                   className="text-green-500 hover:underline mt-2 inline-block"
                 >
                   Ver detalles

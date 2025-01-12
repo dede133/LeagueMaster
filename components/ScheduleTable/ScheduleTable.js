@@ -38,23 +38,25 @@ const ScheduleTable = ({
   const hours = getHoursRange(availability);
 
   return (
-    <div className="relative max-h-96 overflow-auto scroll-custom">
-      <DateSelector
-        selectedDate={selectedDate}
-        setSelectedDate={setSelectedDate}
-        availableWeeks={availableWeeks}
-      />
-      <table className="min-w-max table-fixed border-collapse border-spacing-0">
-        <TableHeader selectedDate={selectedDate} />
-        <TableBody
-          hours={hours}
-          schedule={schedule}
-          setSchedule={setSchedule}
-          user={user}
-          field_id={field_id}
+    <div className="relative w-full">
+      <div className="overflow-y-auto max-h-[600px] scroll-custom">
+        <DateSelector
           selectedDate={selectedDate}
+          setSelectedDate={setSelectedDate}
+          availableWeeks={availableWeeks}
         />
-      </table>
+        <table className="table-auto border-collapse border-spacing-0 w-full">
+          <TableHeader selectedDate={selectedDate} />
+          <TableBody
+            hours={hours}
+            schedule={schedule}
+            setSchedule={setSchedule}
+            user={user}
+            field_id={field_id}
+            selectedDate={selectedDate}
+          />
+        </table>
+      </div>
     </div>
   );
 };

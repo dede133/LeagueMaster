@@ -4,8 +4,8 @@ import React, { useState } from 'react';
 const UserSettings = () => {
   // Datos mockeados iniciales
   const [settings, setSettings] = useState({
-    name: 'Juan Pérez',
-    email: 'juan.perez@example.com',
+    name: 'Roger Tarres Mercader',
+    email: 'roger.tarres@gmail.com',
     password: '',
     notifications: true,
     darkMode: false,
@@ -89,20 +89,6 @@ const UserSettings = () => {
           />
           <label className="ml-2 text-sm font-medium text-gray-700">
             Recibir notificaciones por correo
-          </label>
-        </div>
-
-        {/* Modo oscuro */}
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            name="darkMode"
-            checked={settings.darkMode}
-            onChange={handleCheckboxChange}
-            className="h-4 w-4 text-blue-500 focus:ring-blue-500 border-gray-300 rounded"
-          />
-          <label className="ml-2 text-sm font-medium text-gray-700">
-            Activar modo oscuro
           </label>
         </div>
 

@@ -4,7 +4,6 @@ export const getHoursRange = (availability) => {
   let earliest = 24;
   let latest = 0;
 
-  // Encontrar la hora más temprana y la más tardía en la disponibilidad
   availability.forEach((day) => {
     const start = parseInt(day.start_time.split(':')[0], 10);
     const end = parseInt(day.end_time.split(':')[0], 10);
@@ -14,9 +13,8 @@ export const getHoursRange = (availability) => {
 
   const hours = [];
   for (let i = earliest; i <= latest; i++) {
-    // Crear un nuevo objeto Date con la hora `i`
     const date = new Date();
-    date.setHours(i, 0, 0, 0); // Establecer la hora, minutos, segundos y milisegundos
+    date.setHours(i, 0, 0, 0);
     hours.push(date);
   }
 
@@ -24,8 +22,8 @@ export const getHoursRange = (availability) => {
 };
 
 const getDayOfTheWeek = (date) => {
-  const day = date.getDay(); // Obtiene el día de la semana (0 = domingo, 1 = lunes, ...)
-  return day === 0 ? 6 : day - 1; // Convierte domingo (0) a 6, y desplaza el resto
+  const day = date.getDay();
+  return day === 0 ? 6 : day - 1;
 };
 
 export const preprocessScheduleData = (
@@ -34,10 +32,9 @@ export const preprocessScheduleData = (
   reservations,
   weeks
 ) => {
-  const schedule = {}; // Estructura para almacenar la disponibilidad, bloqueos y reservas
+  const schedule = {};
   const today = new Date();
 
-  // Utilidades para obtener la fecha formateada y verificar si está bloqueada
   const formatDate = (date) => format(date, 'yyyy-MM-dd');
 
   const isDateBlocked = (date) => {
@@ -52,27 +49,22 @@ export const preprocessScheduleData = (
     });
   };
 
-  // Paso 1: Procesar cada semana y cada
-
   weeks.forEach((weekStart) => {
     for (let i = 0; i < 7; i++) {
       const currentDate = new Date(weekStart);
       currentDate.setDate(weekStart.getDate() + i);
       const formattedDate = formatDate(currentDate);
 
-      // Bloquea todo el día si es anterior a `today`
       if (currentDate < today && !isSameDay(currentDate, today)) {
         schedule[formattedDate] = { blocked: true };
         continue;
       }
 
-      // Bloquea el día si está en las fechas bloqueadas
       if (isDateBlocked(currentDate)) {
         schedule[formattedDate] = { blocked: true };
         continue;
       }
 
-      // Marcar horas disponibles según la disponibilidad
       availability.forEach((avail) => {
         if (getDayOfTheWeek(currentDate) === avail.day_of_week % 7) {
           if (!schedule[formattedDate]) schedule[formattedDate] = {};
@@ -81,7 +73,6 @@ export const preprocessScheduleData = (
           const endHour = parseInt(avail.end_time.split(':')[0], 10);
 
           for (let hour = startHour; hour < endHour; hour++) {
-            // Si es el día actual, bloquea horas pasadas
             if (isSameDay(currentDate, today) && hour <= today.getHours()) {
               schedule[formattedDate][hour] = { status: 'blocked' };
             } else {
@@ -93,7 +84,6 @@ export const preprocessScheduleData = (
     }
   });
 
-  // Paso 2: Procesar reservas y marcar horas como reservadas
   reservations.forEach((reservation) => {
     const reservationDate = formatDate(parseISO(reservation.reservation_date));
     const reservationHour = parseInt(
@@ -111,5 +101,5 @@ export const preprocessScheduleData = (
     }
   });
   console.log(schedule);
-  return schedule; // Devuelve la estructura con disponibilidad, bloqueos y reservas
+  return schedule;
 };
