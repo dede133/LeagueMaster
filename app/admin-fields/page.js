@@ -10,19 +10,22 @@ import {
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import ReservationManager from '../../components/AdminFields/ReservationManager';
 import FieldLeaguesManager from '../../components/AdminFields/FieldLeaguesManager';
+import FieldConfiguration from '../../components/AdminFields/FieldConfiguration';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import { getUserFields } from '@/lib/services/field';
 
 const AdminFieldManagement = () => {
   const [fields, setFields] = useState([]);
   const [selectedField, setSelectedField] = useState(null);
-  const [activeTab, setActiveTab] = useState('reservas'); // Controla la pestaña activa
+  const [activeTab, setActiveTab] = useState('reservas');
 
   useEffect(() => {
     const fetchFields = async () => {
       try {
         const fieldsData = await getUserFields();
         setFields(fieldsData);
-        setSelectedField(fieldsData[0]); // Seleccionar el primer campo por defecto
+        setSelectedField(fieldsData[0]);
       } catch (error) {
         console.error('Error al cargar campos:', error.message);
       }
@@ -31,9 +34,12 @@ const AdminFieldManagement = () => {
     fetchFields();
   }, []);
 
+  const handleMockUpdate = (field, value) => {
+    setMockedData((prev) => ({ ...prev, [field]: value }));
+  };
+
   return (
     <div className="flex flex-col m-6 mx-auto w-3/4">
-      {/* Selector de campos */}
       <div className="flex justify-between mb-4">
         <h1 className="text-3xl font-bold">Gestionar {selectedField?.name}</h1>
         <Select
@@ -57,7 +63,6 @@ const AdminFieldManagement = () => {
         </Select>
       </div>
 
-      {/* Pestañas */}
       <Tabs
         defaultValue="reservas"
         value={activeTab}
@@ -66,20 +71,23 @@ const AdminFieldManagement = () => {
         <TabsList>
           <TabsTrigger value="reservas">Reservas</TabsTrigger>
           <TabsTrigger value="ligas">Ligas</TabsTrigger>
+          <TabsTrigger value="modificar">Modificar Campo</TabsTrigger>
         </TabsList>
 
-        {/* Contenido de Reservas */}
         <TabsContent value="reservas">
           {selectedField && (
             <ReservationManager fieldId={selectedField.field_id} />
           )}
         </TabsContent>
 
-        {/* Contenido de Ligas */}
         <TabsContent value="ligas">
           {selectedField && (
             <FieldLeaguesManager fieldId={selectedField.field_id} />
           )}
+        </TabsContent>
+
+        <TabsContent value="modificar">
+          <FieldConfiguration />
         </TabsContent>
       </Tabs>
     </div>

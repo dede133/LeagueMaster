@@ -1,4 +1,3 @@
-// src/components/Profile/UserProfile.js
 import React, { useState, useEffect } from 'react';
 
 const UserProfile = ({ user }) => {
@@ -7,7 +6,6 @@ const UserProfile = ({ user }) => {
 
   const handleSave = (e) => {
     e.preventDefault();
-    // Lógica para guardar cambios en el perfil
   };
 
   return (

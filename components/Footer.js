@@ -7,7 +7,6 @@ const Footer = () => {
   return (
     <footer className="bg-gray-900 text-gray-400 py-8">
       <div className="container mx-auto px-6 lg:px-8">
-        {/* Footer Navigation */}
         <nav className="flex flex-wrap justify-center space-x-6 mb-6">
           <Link href="/privacy" className="hover:text-white">
             Política de Privacidad
@@ -20,7 +19,6 @@ const Footer = () => {
           </Link>
         </nav>
 
-        {/* Copy and Social */}
         <div className="text-center">
           <p className="mb-4">
             &copy; {new Date().getFullYear()} LeagueMaster. Todos los derechos

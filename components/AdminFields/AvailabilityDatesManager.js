@@ -33,7 +33,6 @@ const AvailabilityDatesManager = ({ daysOfWeek, availability, onUpdate }) => {
   }, [availability]);
 
   useEffect(() => {
-    // Llama a `onUpdate` solo cuando `currentAvailability` cambia
     onUpdate({ newAvailability: currentAvailability });
   }, [currentAvailability, onUpdate]);
 

@@ -12,18 +12,17 @@ import Link from 'next/link';
 
 const CustomCarousel = ({ items }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [itemsPerPage, setItemsPerPage] = useState(1); // Número de elementos visibles
+  const [itemsPerPage, setItemsPerPage] = useState(1);
   const [isSliding, setIsSliding] = useState(false);
 
   useEffect(() => {
-    // Ajustar el número de elementos por página según el tamaño de la pantalla
     const updateItemsPerPage = () => {
       if (window.innerWidth >= 1024) {
-        setItemsPerPage(3); // Pantalla grande
+        setItemsPerPage(3);
       } else if (window.innerWidth >= 768) {
-        setItemsPerPage(2); // Pantalla mediana
+        setItemsPerPage(2);
       } else {
-        setItemsPerPage(1); // Pantalla pequeña
+        setItemsPerPage(1);
       }
     };
 
@@ -34,20 +33,20 @@ const CustomCarousel = ({ items }) => {
   }, []);
 
   const handleNext = useCallback(() => {
-    if (isSliding) return; // Evitar múltiples clics rápidos
+    if (isSliding) return;
     setIsSliding(true);
     if (currentIndex >= items.length - itemsPerPage) {
-      setCurrentIndex(0); // Volver al inicio
+      setCurrentIndex(0);
     } else {
       setCurrentIndex(currentIndex + itemsPerPage);
     }
   }, [currentIndex, items.length, itemsPerPage, isSliding]);
 
   const handlePrevious = useCallback(() => {
-    if (isSliding) return; // Evitar múltiples clics rápidos
+    if (isSliding) return;
     setIsSliding(true);
     if (currentIndex === 0) {
-      setCurrentIndex(items.length - itemsPerPage); // Ir al final
+      setCurrentIndex(items.length - itemsPerPage);
     } else {
       setCurrentIndex(currentIndex - itemsPerPage);
     }
@@ -61,13 +60,11 @@ const CustomCarousel = ({ items }) => {
   );
 
   const handleItemClick = (e) => {
-    e.stopPropagation(); // Detener la propagación del evento de clic
+    e.stopPropagation();
   };
 
-  // Duplicar el último elemento si solo hay uno
   const displayItems = items.length === 1 ? [...items, ...items] : items;
 
-  // Asegurarse de que el número de elementos sea múltiplo de itemsPerPage
   const paddedItems = [...displayItems];
   while (paddedItems.length % itemsPerPage !== 0) {
     paddedItems.push(
@@ -90,7 +87,7 @@ const CustomCarousel = ({ items }) => {
             key={index}
             className="flex-shrink-0 p-2"
             style={{ width: `${100 / itemsPerPage}%` }}
-            onClick={handleItemClick} // Detener la propagación del evento de clic
+            onClick={handleItemClick}
           >
             <Link
               href={`/fields/${item.field_id}`}
@@ -120,7 +117,6 @@ const CustomCarousel = ({ items }) => {
         ))}
       </div>
 
-      {/* Botones de navegación */}
       {items.length > itemsPerPage && (
         <>
           <button

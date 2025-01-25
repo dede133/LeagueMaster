@@ -10,16 +10,16 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [message, setMessage] = useState('');
-  const { loginUser } = useAuth(); // Usamos el contexto para loginUser
+  const { loginUser } = useAuth();
   const router = useRouter();
 
   const handleLogin = async (event) => {
     event.preventDefault();
 
     try {
-      await loginUser(email, password); // Llamada a loginUser en lugar de login
+      await loginUser(email, password);
       setMessage('Inicio de sesión exitoso');
-      router.push('/profile'); // Redirigir a la página de perfil
+      router.push('/profile');
     } catch (error) {
       console.error('Error de red o del servidor:', error);
       setError(error.message);

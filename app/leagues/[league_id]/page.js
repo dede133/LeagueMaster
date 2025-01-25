@@ -3,12 +3,12 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getLeagueInfo } from '@/lib/services/league';
 import { Button } from '@/components/ui/button';
-import { useAuth } from '@/context/AuthContext'; // Importa el contexto de autenticación
+import { useAuth } from '@/context/AuthContext';
 
 const LeagueDetails = () => {
   const { league_id } = useParams();
   const router = useRouter();
-  const { isAuthenticated } = useAuth(); // Obtén el estado de autenticación
+  const { isAuthenticated } = useAuth();
   const [league, setLeague] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -32,7 +32,7 @@ const LeagueDetails = () => {
 
   const handleJoinLeague = () => {
     if (!isAuthenticated) {
-      router.push('/login-required'); // Redirige a una página de aviso si no está autenticado
+      router.push('/login-required');
     } else {
       router.push(`/leagues/${league_id}/join`);
     }

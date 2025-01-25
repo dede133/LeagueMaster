@@ -1,4 +1,3 @@
-// app/page.js
 'use client';
 import { useState, useEffect } from 'react';
 import { fetchFields } from '@/lib/services/field';
@@ -30,7 +29,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center min-h-screen">
-      {/* Hero Section */}
       <section className="w-full text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white py-16 px-4 rounded-md shadow-lg">
         <h1 className="text-4xl font-extrabold mb-4">
           Bienvenido a LeagueMaster
@@ -46,12 +44,10 @@ export default function Home() {
         </Link>
       </section>
 
-      {/* Sección de Características */}
       <section className="w-full px-4 sm:px-6 lg:px-8 mb-12">
         <FeatureSection />
       </section>
 
-      {/* Carrusel de Campos */}
       <section className="w-full max-w-5xl px-4 mb-12">
         <h2 className="text-2xl font-bold text-center mb-6">
           Muchos campos disponibles
@@ -67,7 +63,6 @@ export default function Home() {
         )}
       </section>
 
-      {/* Call-to-Action Final */}
       <section className="w-full text-center bg-gray-100 py-8 px-4 rounded-md shadow-lg">
         <h3 className="text-xl font-bold mb-4">¿Listo para comenzar?</h3>
         <p className="text-gray-700 mb-6">

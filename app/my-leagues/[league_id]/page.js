@@ -47,7 +47,6 @@ const LeagueDetailsPage = () => {
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-gray-50 rounded-lg shadow-lg">
-      {/* Tarjeta de Información General */}
       <div className="bg-white p-6 rounded-lg shadow mb-8">
         <h1 className="text-3xl font-bold mb-2">{league.name}</h1>
         <p className="text-gray-600">
@@ -70,7 +69,6 @@ const LeagueDetailsPage = () => {
         </p>
       </div>
 
-      {/* Pestañas */}
       {league.status !== 'pendiente' && (
         <>
           <div className="flex justify-center border-b border-gray-200 mb-6">
@@ -91,7 +89,6 @@ const LeagueDetailsPage = () => {
             ))}
           </div>
 
-          {/* Contenido de las Pestañas */}
           {activeTab === 'standings' && (
             <div>
               <h2 className="text-xl font-bold mb-4">Clasificación</h2>

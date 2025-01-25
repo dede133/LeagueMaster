@@ -5,9 +5,7 @@ const UserPayments = ({ userId }) => {
   const [payments, setPayments] = useState([]);
 
   useEffect(() => {
-    const fetchPayments = async () => {
-      // Lógica para obtener los pagos del usuario
-    };
+    const fetchPayments = async () => {};
 
     if (userId) fetchPayments();
   }, [userId]);

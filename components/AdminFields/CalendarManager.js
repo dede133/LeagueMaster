@@ -1,25 +1,24 @@
 import React from 'react';
-import { generateLeagueLink } from '@/lib/services/league'; // Importa la función para generar el link
+import { generateLeagueLink } from '@/lib/services/league';
 
 const CalendarManager = ({ matches, leagueId, leagueLinks }) => {
   if (!matches || matches.length === 0) {
     return <p>No hay partidos programados.</p>;
   }
 
-  // Agrupar los partidos por fecha
   const groupedMatches = matches.reduce((acc, match) => {
-    const matchDate = new Date(match.date).toISOString().split('T')[0]; // Extraer solo la fecha en formato yyyy-MM-dd
+    const matchDate = new Date(match.date).toISOString().split('T')[0];
     if (!acc[matchDate]) {
-      acc[matchDate] = []; // Si no existe el grupo, créalo
+      acc[matchDate] = [];
     }
-    acc[matchDate].push(match); // Añade el partido al grupo correspondiente
+    acc[matchDate].push(match);
     return acc;
   }, {});
 
   const handleGenerateLink = async (leagueId, date) => {
     try {
       console.log('Generando link para la liga y la fecha:', leagueId, date);
-      const response = await generateLeagueLink(leagueId, date); // Pasa la fecha en formato yyyy-MM-dd
+      const response = await generateLeagueLink(leagueId, date);
       alert(`Link generado: ${response.link.link}`);
     } catch (error) {
       console.error('Error al generar el link:', error.message);

@@ -2,7 +2,6 @@
 import React, { useState } from 'react';
 
 const UserSettings = () => {
-  // Datos mockeados iniciales
   const [settings, setSettings] = useState({
     name: 'Roger Tarres Mercader',
     email: 'roger.tarres@gmail.com',
@@ -35,7 +34,6 @@ const UserSettings = () => {
     <div className="p-6 bg-white shadow rounded-lg">
       <h3 className="text-lg font-bold mb-4">Configuración de Cuenta</h3>
       <div className="space-y-4">
-        {/* Nombre */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Nombre
@@ -49,7 +47,6 @@ const UserSettings = () => {
           />
         </div>
 
-        {/* Correo */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Correo electrónico
@@ -63,7 +60,6 @@ const UserSettings = () => {
           />
         </div>
 
-        {/* Contraseña */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Cambiar Contraseña
@@ -78,7 +74,6 @@ const UserSettings = () => {
           />
         </div>
 
-        {/* Notificaciones */}
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -92,7 +87,6 @@ const UserSettings = () => {
           </label>
         </div>
 
-        {/* Botón de guardar */}
         <div>
           <button
             onClick={handleSave}

@@ -21,7 +21,6 @@ const BlockedDatesManager = ({ initialBlockedDates, onUpdate }) => {
   const [blockedDate, setBlockedDate] = useState();
   const [showModal, setShowModal] = useState(false);
 
-  // Actualizar el estado cuando initialBlockedDates cambia
   useEffect(() => {
     setBlockedDatesList(initialBlockedDates);
   }, [initialBlockedDates]);
@@ -99,7 +98,6 @@ const BlockedDatesManager = ({ initialBlockedDates, onUpdate }) => {
   const handleDeleteBlockedDate = (index) => {
     const dateToDelete = blockedDatesList[index];
 
-    // Declaramos la variable fuera del if para poder usarla después
     let updatedDatesToRemove = datesToRemove;
 
     const existsInOriginal = initialBlockedDates.some(

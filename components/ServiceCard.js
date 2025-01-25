@@ -1,49 +1,35 @@
-// src/components/ServiceCard.js
 import React from 'react';
-import {
-  Wifi,
-  ParkingCircle, // Prueba este icono para "Aparcamiento gratuito"
-  Lock,
-  User, // Ícono alternativo para "Vestuarios"
-  Coffee,
-} from 'lucide-react'; // Importa los íconos necesarios de Lucide
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-// Mapa de iconos para cada servicio
+import { Wifi, ParkingCircle, Lock, User, Coffee } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+
 const iconMap = {
-  'Wi-Fi': <Wifi />,
-  'Aparcamiento gratuito': <ParkingCircle />, // Cambiado a ParkingCircle
-  Taquillas: <Lock />,
-  Vestuarios: <User />, // Cambiado a User en vez de DressingRoom
-  Cafeteria: <Coffee />,
+  'Wi-Fi': <Wifi size={24} className="text-blue-500" />,
+  'Aparcamiento gratuito': (
+    <ParkingCircle size={24} className="text-green-500" />
+  ),
+  Taquillas: <Lock size={24} className="text-yellow-500" />,
+  Vestuarios: <User size={24} className="text-indigo-500" />,
+  Cafeteria: <Coffee size={24} className="text-red-500" />,
 };
 
 const ServiceCard = ({ services }) => {
-  // No renderizar nada si `services` es nulo, indefinido o está vacío
-  if (!services || services.length === 0) {
-    return null;
-  }
+  if (!services || services.length === 0) return null;
 
   return (
-    <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
-      <CardHeader>
-        <CardTitle>Servicios</CardTitle>
-      </CardHeader>
+    <Card className="w-full h-auto lg:max-w-4xl shadow-md border border-gray-200">
       <CardContent>
-        <div className="flex flex-wrap space-x-4">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 items-center">
           {services.map((service) => (
-            <div key={service} className="relative group p-2 text-center">
-              <span className="text-2xl">
-                {iconMap[service] || <span className="text-gray-500">?</span>}
-              </span>
-              <div className="absolute hidden group-hover:block bg-gray-700 text-white text-xs rounded p-1 -bottom-8 left-1/2 transform -translate-x-1/2">
-                {service}
+            <div
+              key={service}
+              className="flex flex-col items-center justify-center p-3 bg-gray-50 rounded-lg shadow-sm hover:shadow-md transition-shadow duration-300 group"
+            >
+              <div className="flex items-center justify-center w-12 h-12 rounded-full bg-gray-100 group-hover:bg-gray-200 transition">
+                {iconMap[service] || <span className="text-gray-400">?</span>}
               </div>
+              <p className="mt-2 text-xs font-medium text-gray-700 group-hover:text-gray-900 transition-colors">
+                {service}
+              </p>
             </div>
           ))}
         </div>

@@ -1,7 +1,5 @@
-// app/fields/[field_id]/pages.js
 'use client';
-import React, { memo } from 'react';
-import { useState, useEffect } from 'react';
+import React, { memo, useState, useEffect } from 'react';
 import { getFieldDetails } from '@/lib/services/field';
 import {
   getFieldAvailability,
@@ -36,17 +34,16 @@ const FieldDetails = memo(({ params }) => {
     const fetchFieldDetails = async () => {
       if (!field_id) return;
       try {
-        const fieldData = await getFieldDetails(field_id); // Detalles del campo
-        // Calcular el rango de las próximas dos semanas
+        const fieldData = await getFieldDetails(field_id);
         const today = startOfToday();
         const twoWeeksLater = addWeeks(today, 2);
         const startDate = format(today, 'yyyy-MM-dd');
         const endDate = format(twoWeeksLater, 'yyyy-MM-dd');
-        // Hacer las peticiones de disponibilidad y fechas bloqueadas en paralelo
+
         const [weeklyAvailability, blockedDates, reservations] =
           await Promise.all([
-            getFieldAvailability(field_id), // Disponibilidad semanal
-            getBlockedDatesByDate(field_id, startDate, endDate), // Fechas bloqueadas dentro del rango
+            getFieldAvailability(field_id),
+            getBlockedDatesByDate(field_id, startDate, endDate),
             getReservationsByFieldAndDate(field_id, startDate, endDate),
           ]);
         setAvailability(weeklyAvailability);
@@ -72,10 +69,6 @@ const FieldDetails = memo(({ params }) => {
       }
     };
     fetchUser();
-
-    return () => {
-      console.log('Cleaning up Fetch User effect');
-    };
   }, []);
 
   if (loading) return <p>Cargando detalles del campo...</p>;
@@ -103,7 +96,7 @@ const FieldDetails = memo(({ params }) => {
           <div className="lg:col-span-3 space-y-6">
             <Card className="w-full shadow-md">
               <CardHeader>
-                <CardTitle>Horario de Pistas</CardTitle>
+                <CardTitle>Horarios del campo</CardTitle>
               </CardHeader>
               <CardContent className="flex justify-center">
                 <div className="w-full">
@@ -121,7 +114,7 @@ const FieldDetails = memo(({ params }) => {
             {field.field_info && (
               <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
                 <CardHeader>
-                  <CardTitle>Informacion</CardTitle>
+                  <CardTitle>Información</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <p>{field.field_info}</p>
@@ -150,21 +143,20 @@ const FieldDetails = memo(({ params }) => {
 
           <div className="space-y-4">
             {field.address && (
-              <Card className="w-full h-auto lg:max-w-4.5xl shadow-md">
-                <CardHeader>
-                  <CardTitle>Ubicación</CardTitle>
-                </CardHeader>
+              <Card className="w-full h-auto lg:max-w-4xl shadow-md border border-gray-200">
                 <CardContent>
-                  <p>{field.address}</p>
-
-                  {false && field.latitude && field.longitude && (
-                    <div className="mt-4">
+                  {field.latitude && field.longitude && (
+                    <div className="rounded-lg overflow-hidden mb-4 border border-gray-300 shadow-sm">
                       <Map
                         latitude={field.latitude}
                         longitude={field.longitude}
                       />
                     </div>
                   )}
+                  <p className="text-gray-800 text-sm font-medium">
+                    <span className="font-bold text-gray-900">Dirección:</span>{' '}
+                    {field.address}
+                  </p>
                 </CardContent>
               </Card>
             )}
@@ -182,9 +174,7 @@ const FieldDetails = memo(({ params }) => {
               </Card>
             )}
 
-            {/* Nueva Card Promocional */}
             <div className="lg:col-span-1">
-              {/* Nueva Card Promocional */}
               <Card className="bg-gradient-to-r from-blue-500 to-purple-500 text-white shadow-lg h-full flex flex-col justify-between">
                 <CardHeader>
                   <CardTitle className="text-xl font-bold">
@@ -195,7 +185,7 @@ const FieldDetails = memo(({ params }) => {
                     de campos. Obtén más información aquí.
                   </CardDescription>
                 </CardHeader>
-                <CardContent className=" flex justify-end items-end p-2">
+                <CardContent className="flex justify-end items-end p-2">
                   <a
                     href="/pricing"
                     className="bg-white text-blue-500 hover:text-blue-600 px-3 py-1.5 rounded-lg text-sm shadow-lg"

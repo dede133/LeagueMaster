@@ -1,9 +1,8 @@
-// app/layout.js
 import '../styles/globals.css';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import { AuthProvider } from '../context/AuthContext';
-import { LeagueProvider } from '../context/LeagueContext'; // Asegúrate de importar el LeagueProvider
+import { LeagueProvider } from '../context/LeagueContext';
 
 export const metadata = {
   title: 'LeagueMaster',

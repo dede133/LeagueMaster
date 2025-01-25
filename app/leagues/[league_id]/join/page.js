@@ -40,8 +40,8 @@ const JoinLeague = () => {
     }
 
     const teamData = {
-      name: teamName, // Nombre del equipo
-      players: players, // Lista de jugadores
+      name: teamName,
+      players: players,
     };
 
     try {

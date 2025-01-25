@@ -5,9 +5,7 @@ const UserNotifications = ({ userId }) => {
   const [notifications, setNotifications] = useState([]);
 
   useEffect(() => {
-    const fetchNotifications = async () => {
-      // Lógica para obtener notificaciones del usuario
-    };
+    const fetchNotifications = async () => {};
 
     if (userId) fetchNotifications();
   }, [userId]);

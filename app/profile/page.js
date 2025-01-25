@@ -1,4 +1,3 @@
-// app/profile/pages.js
 'use client';
 import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/context/AuthContext';
@@ -16,7 +15,7 @@ const ProfilePage = () => {
 
   useEffect(() => {
     if (!loading && !user) {
-      router.push('/login'); // Redirige si el usuario no está autenticado
+      router.push('/login');
     }
   }, [loading, user, router]);
 
@@ -33,7 +32,6 @@ const ProfilePage = () => {
 
   return (
     <div className="max-w-4xl mx-auto mt-10 p-6 bg-white rounded shadow">
-      {/* Tabs */}
       <div className="flex justify-between mb-6 border-b">
         {[
           { label: 'Mi Perfil', value: 'profile' },
@@ -56,7 +54,6 @@ const ProfilePage = () => {
         ))}
       </div>
 
-      {/* Tab Content */}
       <div>
         {selectedTab === 'profile' && <UserProfile user={user} />}
         {selectedTab === 'reservations' && (
@@ -69,7 +66,6 @@ const ProfilePage = () => {
         {selectedTab === 'settings' && <UserSettings user={user} />}
       </div>
 
-      {/* Logout Button */}
       <button
         onClick={handleLogout}
         className="mt-6 bg-red-500 text-white w-full py-2 rounded"

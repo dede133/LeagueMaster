@@ -36,7 +36,6 @@ const Header = () => {
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
       <div className="container mx-auto px-6 lg:px-8 py-5 flex items-center justify-between">
-        {/* Logo */}
         <Link href="/" className="flex items-center space-x-3">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -53,7 +52,6 @@ const Header = () => {
           <span className="text-xl font-bold text-gray-800">LeagueMaster</span>
         </Link>
 
-        {/* Botón Hamburguesa */}
         <button
           className="md:hidden text-gray-600 hover:text-blue-500 focus:outline-none"
           onClick={() => setMenuOpen(!menuOpen)}
@@ -61,7 +59,6 @@ const Header = () => {
           {menuOpen ? <X className="w-7 h-7" /> : <Menu className="w-7 h-7" />}
         </button>
 
-        {/* Navegación Desktop */}
         <nav className="hidden md:flex space-x-8 text-base font-medium">
           <Link href="/" className="text-gray-600 hover:text-blue-500">
             Inicio
@@ -79,10 +76,9 @@ const Header = () => {
             <div className="relative">
               <button
                 className="flex items-center text-base text-gray-600 hover:text-blue-500 focus:outline-none"
-                onClick={toggleDropdown} // Abre/cierra el dropdown manualmente
+                onClick={toggleDropdown}
               >
                 Mis Ligas
-                {/* Icono de flecha de Lucide */}
                 <ChevronDown
                   className={`w-4 h-4 ml-2 transition-transform ${
                     dropdownOpen ? 'rotate-180' : 'rotate-0'
@@ -96,7 +92,7 @@ const Header = () => {
                       <Link
                         href={`/my-leagues/${league.league_id}`}
                         className="block px-4 py-2 text-sm text-gray-700"
-                        onClick={() => setDropdownOpen(false)} // Cierra el dropdown al hacer clic
+                        onClick={() => setDropdownOpen(false)}
                       >
                         {league.league_name}
                       </Link>
@@ -107,7 +103,6 @@ const Header = () => {
             </div>
           )}
 
-          {/* Opciones */}
           {userRole === 'admin' && (
             <Link
               href="/admin-fields"
@@ -134,7 +129,6 @@ const Header = () => {
         </div>
       </div>
 
-      {/* Menú Móvil */}
       {menuOpen && (
         <nav className="md:hidden bg-white shadow-md">
           <ul className="space-y-4 px-6 py-4 text-gray-600 text-base font-medium">

@@ -18,13 +18,12 @@ import {
 const DateSelector = ({ selectedDate, setSelectedDate, availableWeeks }) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  // Definir el inicio y fin del periodo disponible basados en las semanas proporcionadas
   const startOfAvailablePeriod = availableWeeks[0];
   const endOfAvailablePeriod = addDays(availableWeeks[2], 6);
 
   const handleDateSelect = (date) => {
     setSelectedDate(date);
-    setIsOpen(false); // Cierra el popover al seleccionar una fecha
+    setIsOpen(false);
   };
 
   return (
@@ -34,7 +33,7 @@ const DateSelector = ({ selectedDate, setSelectedDate, availableWeeks }) => {
           <Button
             variant={'outline'}
             className="justify-start text-left font-normal"
-            onClick={() => setIsOpen(!isOpen)} // Abre o cierra el popover
+            onClick={() => setIsOpen(!isOpen)}
           >
             <CalendarIcon className="mr-2 h-4 w-4" />
             {selectedDate

@@ -1,4 +1,3 @@
-// app/add-field/pages.js
 'use client';
 import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
@@ -20,30 +19,27 @@ const AddField = () => {
   const [fieldInfo, setFieldInfo] = useState('');
   const [features, setFeatures] = useState('');
   const [availability, setAvailability] = useState('');
-  const [photos, setPhotos] = useState([]); // Estado para manejar las fotos
+  const [photos, setPhotos] = useState([]);
 
   useEffect(() => {
-    // Solo redirige si el usuario está autenticado pero no tiene el rol adecuado
     if (isAuthenticated && userRole !== 'admin') {
       router.replace('/new-field');
     }
   }, [isAuthenticated, userRole, router]);
-  // Evita renderizar contenido hasta que el rol esté definido
+
   if (isAuthenticated && userRole !== 'admin') {
     return null;
   }
   const handleAddField = async (e) => {
     e.preventDefault();
 
-    // Si 'features' es null o una cadena vacía, usar un objeto vacío; de lo contrario, intentar parsearlo
     const parsedFeatures = features ? JSON.parse(features) : null;
 
-    // Si 'availability' es null o una cadena vacía, usar un objeto vacío; de lo contrario, intentar parsearlo
     const parsedAvailability = availability ? JSON.parse(availability) : null;
 
     const formData = new FormData();
     formData.append('name', name);
-    formData.append('latitude', latitude || ''); // Envía '' si está vacío
+    formData.append('latitude', latitude || '');
     formData.append('longitude', longitude || '');
     formData.append('address', address || '');
     formData.append('field_type', fieldType || '');
@@ -51,7 +47,6 @@ const AddField = () => {
     formData.append('features', features || '');
     formData.append('availability', availability || '');
 
-    // Añadir las fotos al FormData
     for (let i = 0; i < photos.length; i++) {
       formData.append('photos', photos[i]);
     }
@@ -63,8 +58,6 @@ const AddField = () => {
     try {
       await addField(formData);
       alert('Campo añadido con éxito');
-      // Redirigir a la página de lista de campos si es necesario
-      // window.location.href = '/fields';
     } catch (error) {
       alert(error.message);
     }

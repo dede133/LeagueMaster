@@ -15,7 +15,7 @@ const LoginRequired = () => {
         tu cuenta.
       </p>
       <Button
-        onClick={() => router.push('/login')} // Redirige al formulario de inicio de sesión
+        onClick={() => router.push('/login')}
         className="bg-blue-600 text-white font-semibold py-2 px-4 rounded"
       >
         Iniciar sesión

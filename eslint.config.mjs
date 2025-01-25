@@ -16,7 +16,7 @@ export default [
       'prettier/prettier': [
         'error',
         {
-          endOfLine: 'lf', // Añadir esta opción para forzar LF como salto de línea
+          endOfLine: 'lf',
         },
       ],
     },

@@ -1,4 +1,3 @@
-// src/hooks/useAuth.js
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -14,19 +13,19 @@ const useAuth = () => {
       try {
         const response = await fetch('http://localhost:5000/api/auth/user', {
           method: 'GET',
-          credentials: 'include', // Incluye cookies para la autenticación
+          credentials: 'include',
         });
 
         const data = await response.json();
         if (response.ok) {
-          setUser(data.user); // Almacena los datos del usuario
+          setUser(data.user);
         } else {
           console.error(
             'Error al obtener los datos del usuario:',
             data.message
           );
           setError(data.message);
-          router.push('/login'); // Redirige si no está autenticado
+          router.push('/login');
         }
       } catch (error) {
         console.error('Error de red o del servidor:', error);

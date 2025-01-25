@@ -23,25 +23,22 @@ const LeagueConfiguration = () => {
   const [teams, setTeams] = useState([]);
   const [loadingLeague, setLoadingLeague] = useState(true);
   const [loadingTeams, setLoadingTeams] = useState(false);
-  const [activeTab, setActiveTab] = useState('configuration'); // Tab activa
+  const [activeTab, setActiveTab] = useState('configuration');
 
   useEffect(() => {
     console.log('League ID:');
     const fetchLeague = async () => {
       try {
-        // Obtener información general de la liga
         const leagueData = await getLeagueInfo(league_id);
         setLeague(leagueData);
 
-        // Obtener detalles específicos de la liga
         const leagueDetails = await getLeagueDetails(league_id);
         setLeagueDetails(leagueDetails);
         console.log('League Details:', leagueDetails);
 
-        // Obtener links asociados a la liga
         const leagueLinks = await getLeagueLinks(league_id);
         console.log('League Links 2:', leagueLinks);
-        setLeagueLinks(leagueLinks.links); // Asegúrate de tener un estado llamado setLeagueLinks
+        setLeagueLinks(leagueLinks.links);
       } catch (error) {
         console.error(
           'Error al cargar la liga, detalles o links:',

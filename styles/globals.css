@@ -74,8 +74,8 @@
 }
 
 .scroll-custom::-webkit-scrollbar {
-  width: 10px; /* Scroll vertical */
-  height: 10px; /* Scroll horizontal */
+  width: 10px;
+  height: 10px;
 }
 
 .scroll-custom:hover::-webkit-scrollbar {

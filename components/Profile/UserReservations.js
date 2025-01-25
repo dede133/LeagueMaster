@@ -1,5 +1,5 @@
 'use client';
-// src/components/Profile/UserReservations.js
+
 import React, { useState, useEffect } from 'react';
 import {
   getReservationsByUser,
@@ -27,7 +27,7 @@ const UserReservations = ({ userId }) => {
 
     try {
       await cancelReservation(reservationId);
-      // Actualizar la lista de reservas después de cancelar
+
       setReservations((prevReservations) =>
         prevReservations.map((reservation) =>
           reservation.reservation_id === reservationId

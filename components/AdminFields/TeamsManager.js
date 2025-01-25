@@ -72,7 +72,7 @@ const TeamsManager = ({ teams }) => {
                       variant="secondary"
                       className="text-sm"
                       onClick={(e) => {
-                        e.stopPropagation(); // Evita que el clic cierre la tarjeta
+                        e.stopPropagation();
                         alert(`Opciones del equipo ${team.name}`);
                       }}
                     >
