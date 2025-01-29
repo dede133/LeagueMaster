@@ -9,7 +9,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import Link from 'next/link';
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const CustomCarousel = ({ items }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(1);
@@ -96,7 +96,7 @@ const CustomCarousel = ({ items }) => {
               <div className="overflow-hidden rounded-t-lg flex-grow">
                 {item.photo_url && item.photo_url.length > 0 ? (
                   <img
-                    src={`http://localhost:5000/${item.photo_url[0]}`}
+                    src={`${API_BASE_URL}/${item.photo_url[0]}`}
                     alt={item.name}
                     className="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
                   />

@@ -19,7 +19,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import { startOfToday, addWeeks, format } from 'date-fns';
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const FieldDetails = memo(({ params }) => {
   const { field_id } = params;
   const [field, setField] = useState(null);
@@ -79,7 +79,7 @@ const FieldDetails = memo(({ params }) => {
     <>
       <div className="relative w-full h-64 bg-gray-800">
         <img
-          src={`http://localhost:5000/${field.photo_url[0]}`}
+          src={`${API_BASE_URL}/${field.photo_url[0]}`}
           alt={field.name}
           className="absolute w-full h-full object-cover"
         />
@@ -129,7 +129,7 @@ const FieldDetails = memo(({ params }) => {
                     {field.photo_url.map((photoUrl, index) => (
                       <div key={index} className="overflow-hidden rounded-lg">
                         <img
-                          src={`http://localhost:5000/${photoUrl}`}
+                          src={`${API_BASE_URL}/${photoUrl}`}
                           alt={`Image ${index + 1}`}
                           className="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
                         />

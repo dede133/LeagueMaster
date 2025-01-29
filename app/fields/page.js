@@ -1,4 +1,3 @@
-// app/fields/pages.js
 'use client';
 import { useState, useEffect } from 'react';
 import { fetchFields } from '@/lib/services/field';
@@ -11,7 +10,7 @@ import {
   CardTitle,
 } from '@/components/ui/card';
 import SearchFilter from '@/components/SearchFilter';
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 export default function FieldsPage() {
   const [fields, setFields] = useState([]);
   const [filteredFields, setFilteredFields] = useState([]);
@@ -109,7 +108,7 @@ export default function FieldsPage() {
                   <div className="overflow-hidden rounded-t-lg flex-grow">
                     {field.photo_url && field.photo_url.length > 0 ? (
                       <img
-                        src={`http://localhost:5000/${field.photo_url[0]}`}
+                        src={`${API_BASE_URL}/${field.photo_url[0]}`}
                         alt={field.name}
                         className="w-full h-64 object-cover transition-transform duration-300 hover:scale-105"
                       />

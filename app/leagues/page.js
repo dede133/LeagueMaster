@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { getAllLeagues } from '@/lib/services/league';
 import SearchFilter from '@/components/SearchFilter';
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 export default function LeaguesPage() {
   const [leagues, setLeagues] = useState([]);
   const [filteredLeagues, setFilteredLeagues] = useState([]);
@@ -100,7 +100,7 @@ export default function LeaguesPage() {
                 className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
               >
                 <img
-                  src={`http://localhost:5000/${league.photo_url}`}
+                  src={`${API_BASE_URL}/${league.photo_url}`}
                   alt={`Campo de ${league.name}`}
                   className="w-full h-40 object-cover rounded-lg mb-4"
                 />

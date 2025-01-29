@@ -4,7 +4,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { getLeagueInfo } from '@/lib/services/league';
 import { Button } from '@/components/ui/button';
 import { useAuth } from '@/context/AuthContext';
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const LeagueDetails = () => {
   const { league_id } = useParams();
   const router = useRouter();
@@ -54,7 +54,7 @@ const LeagueDetails = () => {
     <div className="max-w-4xl mx-auto p-6 bg-gray-50 rounded-lg shadow-md">
       <div className="mb-6">
         <img
-          src={`http://localhost:5000/${league.photo_url}`}
+          src={`${API_BASE_URL}/${league.photo_url}`}
           alt={league.name}
           className="w-full h-64 object-cover rounded-lg"
         />

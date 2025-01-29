@@ -1,7 +1,7 @@
 'use client';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const useAuth = () => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -11,7 +11,7 @@ const useAuth = () => {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const response = await fetch('http://localhost:5000/api/auth/user', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/user`, {
           method: 'GET',
           credentials: 'include',
         });
