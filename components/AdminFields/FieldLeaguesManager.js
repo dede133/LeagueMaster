@@ -16,10 +16,9 @@ const daysOfWeek = [
 
 const formatDate = (isoDate) => {
   const date = new Date(isoDate);
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
+  return `${date.getDate().toString().padStart(2, '0')}/${(date.getMonth() + 1)
+    .toString()
+    .padStart(2, '0')}/${date.getFullYear()}`;
 };
 
 const FieldLeaguesManager = ({ fieldId }) => {
@@ -82,13 +81,13 @@ const FieldLeaguesManager = ({ fieldId }) => {
   };
 
   return (
-    <div className="p-6 bg-gray-50 rounded-lg shadow-md">
+    <div className="p-6 bg-gray-50 rounded-lg shadow-lg">
       <h2 className="text-lg font-bold mb-4 text-center text-gray-800">
-        Gestionar Ligas
+        Gestionar ligas
       </h2>
       <Button
         onClick={() => setShowCreateForm((prev) => !prev)}
-        className="mb-4 bg-gradient-to-r from-blue-500 to-blue-700 text-white"
+        className="mb-4 bg-blue-600 hover:bg-blue-700 text-white transition-all"
       >
         {showCreateForm ? 'Cancelar' : 'Crear Liga'}
       </Button>
@@ -96,7 +95,7 @@ const FieldLeaguesManager = ({ fieldId }) => {
       {showCreateForm && (
         <div className="p-6 bg-white shadow-lg rounded-lg mb-6">
           <h3 className="text-xl font-semibold text-gray-800 mb-4 text-center">
-            Crear Nueva Liga
+            Crear nueva liga
           </h3>
           <div className="space-y-4">
             <input
@@ -107,20 +106,22 @@ const FieldLeaguesManager = ({ fieldId }) => {
               placeholder="Nombre de la liga"
               className="w-full px-4 py-2 border border-gray-300 rounded-lg"
             />
-            <input
-              type="date"
-              name="start_date"
-              value={newLeague.start_date}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-            />
-            <input
-              type="date"
-              name="end_date"
-              value={newLeague.end_date}
-              onChange={handleInputChange}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg"
-            />
+            <div className="grid grid-cols-2 gap-4">
+              <input
+                type="date"
+                name="start_date"
+                value={newLeague.start_date}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              />
+              <input
+                type="date"
+                name="end_date"
+                value={newLeague.end_date}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg"
+              />
+            </div>
             <select
               name="game_days"
               value={newLeague.game_days}
@@ -136,26 +137,33 @@ const FieldLeaguesManager = ({ fieldId }) => {
                 </option>
               ))}
             </select>
-            <div className="flex space-x-2">
-              <input
-                type="time"
-                value={newLeague.game_times[0]}
-                onChange={(e) => handleGameTimesChange(0, e.target.value)}
-                className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg"
-              />
-              <input
-                type="time"
-                value={newLeague.game_times[1]}
-                onChange={(e) => handleGameTimesChange(1, e.target.value)}
-                className="w-1/2 px-4 py-2 border border-gray-300 rounded-lg"
-              />
+            <div>
+              <label className="block text-lg font-medium text-gray-700 mb-2">
+                Horarios de juego
+              </label>
+              <div className="grid grid-cols-2 gap-4">
+                <input
+                  type="time"
+                  value={newLeague.game_times[0]}
+                  onChange={(e) => handleGameTimesChange(0, e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="Desde"
+                />
+                <input
+                  type="time"
+                  value={newLeague.game_times[1]}
+                  onChange={(e) => handleGameTimesChange(1, e.target.value)}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
+                  placeholder="Hasta"
+                />
+              </div>
             </div>
           </div>
           <Button
             onClick={handleCreateLeague}
-            className="w-full mt-4 bg-gradient-to-r from-green-500 to-green-700 text-white"
+            className="w-full mt-4 bg-green-600 hover:bg-green-700 text-white transition-all"
           >
-            Guardar Liga
+            Guardar liga
           </Button>
         </div>
       )}
@@ -169,7 +177,7 @@ const FieldLeaguesManager = ({ fieldId }) => {
               href={`/admin-fields/${league.league_id}`}
               key={league.league_id}
             >
-              <li className="p-4 mb-2 bg-white shadow-md rounded-lg transition transform hover:scale-105 hover:shadow-lg">
+              <li className="p-4 bg-white shadow-md rounded-lg transition-all transform hover:scale-105 hover:shadow-lg">
                 <h3 className="text-md font-bold text-gray-800">
                   {league.name}
                 </h3>

@@ -4,6 +4,8 @@ import { generateLeagueLink } from '@/lib/services/league';
 const CalendarManager = ({ matches, leagueId, leagueLinks }) => {
   if (!matches || matches.length === 0) {
     return <p>No hay partidos programados.</p>;
+  } else {
+    console.log('Matches:', matches);
   }
 
   const groupedMatches = matches.reduce((acc, match) => {

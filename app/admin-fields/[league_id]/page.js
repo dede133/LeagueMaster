@@ -214,36 +214,49 @@ const LeagueConfiguration = () => {
 
       {/* Clasificación Tab */}
       {activeTab === 'standings' && (
-        <div>
-          <h3 className="text-xl font-bold mb-4">Clasificación</h3>
-          <table className="w-full bg-white border border-gray-300">
-            <thead>
-              <tr>
-                <th className="px-4 py-2 border">Equipo</th>
-                <th className="px-4 py-2 border">Jugados</th>
-                <th className="px-4 py-2 border">Ganados</th>
-                <th className="px-4 py-2 border">Empatados</th>
-                <th className="px-4 py-2 border">Perdidos</th>
-                <th className="px-4 py-2 border">Goles a Favor</th>
-                <th className="px-4 py-2 border">Goles en Contra</th>
-                <th className="px-4 py-2 border">Puntos</th>
-              </tr>
-            </thead>
-            <tbody>
-              {leagueDetails?.standings.map((standing) => (
-                <tr key={standing.standing_id}>
-                  <td className="px-4 py-2 border">{standing.team_name}</td>
-                  <td className="px-4 py-2 border">{standing.played}</td>
-                  <td className="px-4 py-2 border">{standing.won}</td>
-                  <td className="px-4 py-2 border">{standing.drawn}</td>
-                  <td className="px-4 py-2 border">{standing.lost}</td>
-                  <td className="px-4 py-2 border">{standing.goals_for}</td>
-                  <td className="px-4 py-2 border">{standing.goals_against}</td>
-                  <td className="px-4 py-2 border">{standing.points}</td>
+        <div className="bg-white shadow-lg rounded-lg p-6">
+          <h3 className="text-2xl font-semibold mb-6 text-gray-800 text-center">
+            Clasificación
+          </h3>
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse">
+              <thead>
+                <tr className="bg-blue-500 text-white text-left">
+                  <th className="px-4 py-3 rounded-l-lg">Equipo</th>
+                  <th className="px-4 py-3">J</th>
+                  <th className="px-4 py-3">G</th>
+                  <th className="px-4 py-3">E</th>
+                  <th className="px-4 py-3">P</th>
+                  <th className="px-4 py-3">GF</th>
+                  <th className="px-4 py-3">GC</th>
+                  <th className="px-4 py-3 rounded-r-lg">Pts</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {leagueDetails?.standings.map((standing, index) => (
+                  <tr
+                    key={standing.standing_id}
+                    className={`text-gray-700 text-center ${
+                      index % 2 === 0 ? 'bg-gray-100' : 'bg-white'
+                    }`}
+                  >
+                    <td className="px-4 py-3 font-semibold text-left">
+                      {standing.team_name}
+                    </td>
+                    <td className="px-4 py-3">{standing.played}</td>
+                    <td className="px-4 py-3">{standing.won}</td>
+                    <td className="px-4 py-3">{standing.drawn}</td>
+                    <td className="px-4 py-3">{standing.lost}</td>
+                    <td className="px-4 py-3">{standing.goals_for}</td>
+                    <td className="px-4 py-3">{standing.goals_against}</td>
+                    <td className="px-4 py-3 font-bold text-blue-600">
+                      {standing.points}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       )}
     </div>

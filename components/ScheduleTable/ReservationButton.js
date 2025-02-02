@@ -52,8 +52,7 @@ const ReservationButton = ({
 
       setSchedule((prevSchedule) => {
         const updatedSchedule = { ...prevSchedule };
-        const hourKey = format(hour, 'HH');
-
+        const hourKey = parseInt(format(hour, 'H'), 10);
         if (updatedSchedule[day] && updatedSchedule[day][hourKey]) {
           updatedSchedule[day][hourKey] = {
             status: 'reserved',

@@ -31,6 +31,7 @@ const ReservationManager = ({ fieldId }) => {
   const [isCardActive, setIsCardActive] = useState(
     daysOfWeek.reduce((acc, day) => ({ ...acc, [day]: true }), {})
   );
+  const [message, setMessage] = useState({ type: '', text: '' });
 
   useEffect(() => {
     const fetchFieldData = async () => {
@@ -80,7 +81,15 @@ const ReservationManager = ({ fieldId }) => {
     try {
       await saveWeeklyAvailabilityData();
       await manageBlockedDates();
+      setMessage({
+        type: 'success',
+        text: 'Los cambios se han guardado correctamente.',
+      });
     } catch (error) {
+      setMessage({
+        type: 'error',
+        text: 'Hubo un error al guardar los cambios.',
+      });
       console.error('Error al confirmar cambios:', error);
     }
   };
@@ -167,6 +176,16 @@ const ReservationManager = ({ fieldId }) => {
         >
           Confirmar cambios
         </Button>
+
+        {message.text && (
+          <div
+            className={`mt-4 p-3 text-white text-center rounded-lg ${
+              message.type === 'success' ? 'bg-green-500' : 'bg-red-500'
+            }`}
+          >
+            {message.text}
+          </div>
+        )}
       </div>
     </div>
   );

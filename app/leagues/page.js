@@ -66,7 +66,7 @@ export default function LeaguesPage() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-50 space-y-8">
       <section className="w-full text-center bg-gradient-to-r from-green-500 to-teal-500 text-white py-12 px-4 rounded-md shadow-lg">
-        <h1 className="text-3xl font-extrabold">Explora Nuestras Ligas</h1>
+        <h1 className="text-3xl font-extrabold">Explora nuestras ligas</h1>
         <p className="text-lg md:text-xl mt-4">
           Participa en las mejores ligas de fútbol y demuestra tu talento.
         </p>

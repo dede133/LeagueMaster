@@ -44,7 +44,7 @@ const UserReservations = ({ userId }) => {
 
   return (
     <div className="mt-6">
-      <h3 className="text-lg font-bold mb-4">Mis Reservas</h3>
+      <h3 className="text-lg font-bold mb-4">Mis reservas</h3>
       {reservations.length > 0 ? (
         <ul>
           {reservations.map((reservation) => (
@@ -77,7 +77,7 @@ const UserReservations = ({ userId }) => {
                   }
                   className="mt-2 bg-red-500 text-white px-4 py-1 rounded"
                 >
-                  Cancelar Reserva
+                  Cancelar reserva
                 </button>
               )}
             </li>

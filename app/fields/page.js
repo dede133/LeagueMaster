@@ -72,7 +72,7 @@ export default function FieldsPage() {
   return (
     <div className="flex flex-col items-center min-h-screen bg-gray-50">
       <section className="w-full text-center bg-gradient-to-r from-blue-500 to-purple-500 text-white py-12 px-4 rounded-md shadow-lg mb-8">
-        <h1 className="text-3xl font-extrabold">Descubre Nuestros Campos</h1>
+        <h1 className="text-3xl font-extrabold">Descubre nuestros campos</h1>
         <p className="text-lg md:text-xl mt-4">
           Encuentra el campo perfecto para tus partidos y eventos.
         </p>

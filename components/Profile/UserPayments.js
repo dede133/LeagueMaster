@@ -12,7 +12,7 @@ const UserPayments = ({ userId }) => {
 
   return (
     <div>
-      <h3 className="text-lg font-bold mb-4">Historial de Pagos</h3>
+      <h3 className="text-lg font-bold mb-4">Historial de pagos</h3>
       {payments.length > 0 ? (
         <ul>
           {payments.map((payment) => (

@@ -1,10 +1,10 @@
 'use client';
 import React, { useState } from 'react';
 
-const UserSettings = () => {
+const UserSettings = ({ user }) => {
   const [settings, setSettings] = useState({
-    name: 'Roger Tarres Mercader',
-    email: 'roger.tarres@gmail.com',
+    name: user?.name || 'Roger Tarres Mercader',
+    email: user?.email || 'roger.tarres.mercader@gmail.com',
     password: '',
     notifications: true,
     darkMode: false,
@@ -26,14 +26,18 @@ const UserSettings = () => {
     }));
   };
 
-  const handleSave = () => {
+  const handleSave = (e) => {
+    e.preventDefault();
     alert('Cambios guardados:\n' + JSON.stringify(settings, null, 2));
   };
 
   return (
     <div className="p-6 bg-white shadow rounded-lg">
-      <h3 className="text-lg font-bold mb-4">Configuración de Cuenta</h3>
-      <div className="space-y-4">
+      <h3 className="text-lg font-bold mb-4">
+        Perfil de usuario y configuración
+      </h3>
+      <form onSubmit={handleSave} className="space-y-4">
+        {/* Nombre */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Nombre
@@ -44,9 +48,11 @@ const UserSettings = () => {
             value={settings.name}
             onChange={handleInputChange}
             className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
           />
         </div>
 
+        {/* Correo electrónico */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Correo electrónico
@@ -57,9 +63,11 @@ const UserSettings = () => {
             value={settings.email}
             onChange={handleInputChange}
             className="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+            required
           />
         </div>
 
+        {/* Cambiar contraseña */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Cambiar Contraseña
@@ -74,6 +82,7 @@ const UserSettings = () => {
           />
         </div>
 
+        {/* Notificaciones */}
         <div className="flex items-center">
           <input
             type="checkbox"
@@ -87,15 +96,16 @@ const UserSettings = () => {
           </label>
         </div>
 
+        {/* Guardar cambios */}
         <div>
           <button
-            onClick={handleSave}
+            type="submit"
             className="w-full bg-blue-500 text-white py-2 rounded hover:bg-blue-600 transition"
           >
-            Guardar Cambios
+            Guardar cambios
           </button>
         </div>
-      </div>
+      </form>
     </div>
   );
 };

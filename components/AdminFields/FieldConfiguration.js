@@ -9,22 +9,42 @@ import {
 } from '@/components/ui/select';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
+import { CheckSquare } from 'lucide-react';
+
+const fieldTypes = ['Fútbol 7', 'Fútbol 5', 'Fútbol Sala'];
+
+const availableServices = [
+  'Wi-Fi',
+  'Aparcamiento gratuito',
+  'Taquillas',
+  'Vestuarios',
+  'Cafetería',
+];
 
 const FieldConfiguration = ({ onSave }) => {
   const [mockedData, setMockedData] = useState({
-    name: 'Highlands',
-    address:
-      'Av. de Jacint Esteva Fontanet, 105, 08950 Esplugues de Llobregat, Barcelona',
-    latitude: 41.38268,
-    longitude: 2.089039,
-    field_info: 'Información detallada del campo...',
-    field_type: 'football',
+    name: 'Campo dede',
+    address: 'dedelandia',
+    latitude: 3.21312,
+    longitude: 3.123232,
+    field_info: 'Campo de dedelandia',
+    field_type: 'Fútbol 7',
     photo_url: 'foto.jpg',
     owner_user_id: 1,
+    services: ['Wi-Fi', 'Taquillas'],
   });
 
   const handleMockUpdate = (field, value) => {
     setMockedData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const toggleService = (service) => {
+    setMockedData((prev) => ({
+      ...prev,
+      services: prev.services.includes(service)
+        ? prev.services.filter((s) => s !== service)
+        : [...prev.services, service],
+    }));
   };
 
   return (
@@ -52,27 +72,29 @@ const FieldConfiguration = ({ onSave }) => {
               placeholder="Dirección"
             />
           </div>
-          <div>
-            <label className="block text-lg font-medium mb-2">Latitud</label>
-            <Input
-              type="number"
-              value={mockedData.latitude}
-              onChange={(e) =>
-                handleMockUpdate('latitude', parseFloat(e.target.value))
-              }
-              placeholder="Latitud"
-            />
-          </div>
-          <div>
-            <label className="block text-lg font-medium mb-2">Longitud</label>
-            <Input
-              type="number"
-              value={mockedData.longitude}
-              onChange={(e) =>
-                handleMockUpdate('longitude', parseFloat(e.target.value))
-              }
-              placeholder="Longitud"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-lg font-medium mb-2">Latitud</label>
+              <Input
+                type="number"
+                value={mockedData.latitude}
+                onChange={(e) =>
+                  handleMockUpdate('latitude', parseFloat(e.target.value))
+                }
+                placeholder="Latitud"
+              />
+            </div>
+            <div>
+              <label className="block text-lg font-medium mb-2">Longitud</label>
+              <Input
+                type="number"
+                value={mockedData.longitude}
+                onChange={(e) =>
+                  handleMockUpdate('longitude', parseFloat(e.target.value))
+                }
+                placeholder="Longitud"
+              />
+            </div>
           </div>
           <div>
             <label className="block text-lg font-medium mb-2">
@@ -97,8 +119,11 @@ const FieldConfiguration = ({ onSave }) => {
                 <SelectValue placeholder="Selecciona el tipo de campo" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="football">Fútbol 5</SelectItem>
-                <SelectItem value="basketball">Futbol 7</SelectItem>
+                {fieldTypes.map((type) => (
+                  <SelectItem key={type} value={type}>
+                    {type}
+                  </SelectItem>
+                ))}
               </SelectContent>
             </Select>
           </div>
@@ -123,6 +148,34 @@ const FieldConfiguration = ({ onSave }) => {
               placeholder="ID del propietario del campo"
             />
           </div>
+
+          <div>
+            <label className="block text-lg font-medium mb-2">
+              Servicios disponibles
+            </label>
+            <div className="grid grid-cols-2 gap-2">
+              {availableServices.map((service) => (
+                <label
+                  key={service}
+                  className={`flex items-center space-x-2 p-2 border rounded-lg cursor-pointer ${
+                    mockedData.services.includes(service)
+                      ? 'bg-blue-100 border-blue-500'
+                      : 'border-gray-300'
+                  }`}
+                  onClick={() => toggleService(service)}
+                >
+                  <input
+                    type="checkbox"
+                    checked={mockedData.services.includes(service)}
+                    onChange={() => toggleService(service)}
+                    className="hidden"
+                  />
+                  <span className="text-gray-700">{service}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+
           <Button
             className="mt-6 w-full bg-blue-500 text-white hover:bg-blue-600"
             onClick={() => onSave(mockedData)}
